@@ -108,6 +108,7 @@
   :config
   (defalias 'list-buffers 'ibuffer))
 
+;; Пакет для работы клавиш емакса в русской раскладке
 (use-package reverse-im
   :ensure t
   :custom
@@ -115,6 +116,7 @@
   :config
   (reverse-im-mode t))
 
+;; Настройки для IRC
 (use-package rcirc
   :init
   (setq rcirc-authenticate-before-join t)
@@ -126,13 +128,28 @@
     (("irc.freenode.net" :channels
       ("#em.slashem.me" "#hardfought" "#nethack"))))))
 
+;; Автодополнение
+(use-package company
+  :ensure t
+  :config
+  (add-to-list 'company-backends 'company-ansible)
+  (add-hook 'after-init-hook 'global-company-mode))
+(use-package company-ansible
+  :ensure t)
+
 ;; Дополнительные пакеты
-(use-package ansible)
-(use-package ansible-doc)
-(use-package ansible-vault)
-(use-package docker-compose-mode)
-(use-package dockerfile-mode)
-(use-package go-mode)
+(use-package ansible
+  :ensure t)
+(use-package ansible-doc
+  :ensure t)
+(use-package ansible-vault
+  :ensure t)
+(use-package docker-compose-mode
+  :ensure t)
+(use-package dockerfile-mode
+  :ensure t)
+(use-package go-mode
+  :ensure t)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -140,11 +157,3 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Go Mono" :foundry "    " :slant normal :weight normal :height 120 :width normal)))))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (use-package reverse-im organic-green-theme mood-line go-mode dockerfile-mode docker-compose-mode ansible-vault ansible-doc ansible))))
