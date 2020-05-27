@@ -78,6 +78,17 @@
   (epa-file-enable)
   (load-library "~/.emacs.d/secrets.el.gpg"))
 
+(use-package ansible
+  :ensure t)
+(use-package ansible-doc
+  :ensure t)
+(use-package ansible-vault
+  :ensure t)
+(use-package docker-compose-mode
+  :ensure t)
+(use-package dockerfile-mode
+  :ensure t)
+
 ;; Улучшенный модлайн
 (use-package mood-line
   :ensure t
@@ -132,28 +143,45 @@
 (use-package company
   :ensure t
   :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 1)
   (add-to-list 'company-backends 'company-ansible)
   (add-hook 'after-init-hook 'global-company-mode))
 (use-package company-ansible
   :ensure t)
 
-;; Дополнительные пакеты
-(use-package ansible
-  :ensure t)
-(use-package ansible-doc
-  :ensure t)
-(use-package ansible-vault
-  :ensure t)
-(use-package docker-compose-mode
-  :ensure t)
-(use-package dockerfile-mode
-  :ensure t)
+;; Автодополнение для Go при помощи gopls
+;; Базовый пакет для поддержки Go
 (use-package go-mode
   :ensure t)
+;; Это нужно чтобы получить значение $PATH из шелла
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  :hook (go-mode . lsp-deferred))
+
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+(setq lsp-register-custom-settings
+      '(("gopls.completeUnimported" t t)
+	("gopls.staticcheck" t t)))
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Go Mono" :foundry "    " :slant normal :weight normal :height 120 :width normal)))))
+ '(default ((t (:family "Go Mono" :foundry "    " :slant normal :weight normal :height 110 :width normal)))))
