@@ -45,7 +45,7 @@
 ;; Переносить по словам
 (setq word-wrap t)
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-(add-hook 'text-mode-hook 'linum-mode)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
 ;; При вводе парного элемента (скобки, кавычки), автоматически добавлять
 ;; закрывающий элемент и ставить курсор между элементами
 (electric-pair-mode t)
