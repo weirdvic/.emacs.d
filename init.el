@@ -1,3 +1,4 @@
+;; Подключение репозиториев пакетов
 (require 'package)
 (setq package-archives
       '(("gnu" . "https://elpa.gnu.org/packages/")
@@ -7,12 +8,19 @@
 (eval-when-compile
   (require 'use-package))
 
+;; Перенести переменные, создаваемые Custom в отдельный файл
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 ;; #############################################################################
 ;; #                                                                           #
 ;; #                     Настройки интерфейса и переменных                     #
 ;; #                                                                           #
 ;; #############################################################################
 
+;; Цветовая схема
+(load-theme 'tango t)
 ;; Отключение элементов интерфейса
 (setq inhibit-splash-screen   t)
 (setq inhibit-startup-message t)
@@ -38,8 +46,10 @@
 (setq word-wrap t)
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 (add-hook 'text-mode-hook 'linum-mode)
-;; Подсветка парных скобок
+;; При вводе парного элемента (скобки, кавычки), автоматически добавлять
+;; закрывающий элемент и ставить курсор между элементами
 (electric-pair-mode t)
+(show-paren-mode 1)
 ;; Дни недели и месяцы на русском языке
 (setq calendar-week-start-day 1
       calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
@@ -76,7 +86,9 @@
 (use-package epa-file
   :config
   (epa-file-enable)
-  (load-library "~/.emacs.d/secrets.el.gpg"))
+  (setq secrets-file (expand-file-name "secrets.el.gpg" user-emacs-directory))
+  (when (file-exists-p secrets-file)
+  (load secrets-file)))
 
 (use-package ansible
   :ensure t)
@@ -95,11 +107,10 @@
   :config
   (mood-line-mode))
 
-;; Цветовая схема
-;; (use-package organic-green-theme
-;;   :ensure t
-;;   :config (load-theme 'organic-green t))
-(load-theme 'tango t)
+;; Подсветка скобок
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; IDO плагин
 (use-package ido
@@ -147,6 +158,7 @@
   (setq company-minimum-prefix-length 1)
   (add-to-list 'company-backends 'company-ansible)
   (add-hook 'after-init-hook 'global-company-mode))
+
 (use-package company-ansible
   :ensure t)
 
@@ -169,7 +181,7 @@
 (defun lsp-go-install-save-hooks ()
   (add-hook 'before-save-hook #'lsp-format-buffer t t)
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
-(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 (setq lsp-register-custom-settings
       '(("gopls.completeUnimported" t t)
@@ -179,9 +191,13 @@
   :ensure t
   :commands lsp-ui-mode)
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Go Mono" :foundry "    " :slant normal :weight normal :height 110 :width normal)))))
+;; Racket mode для работы с Scheme
+(use-package racket-mode
+  :ensure t
+  :mode "\\.scm\\'"
+  :config
+  ;; Запуск кода по нажатию F5
+  (add-hook 'racket-mode-hook
+	    (lambda ()
+	      (define-key racket-mode-map (kbd "<f5>") 'racket-run))))
+
