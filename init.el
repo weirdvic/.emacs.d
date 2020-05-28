@@ -69,10 +69,6 @@
 (global-set-key (kbd "C-z") 'quoted-insert)
 ;; Прокрутка по одной линии за раз
 (setq scroll-step 1)
-;; Уведомления в модлайне для IRC
-(add-hook 'rcirc-mode-hook
-  (lambda ()
-    (rcirc-track-minor-mode 1)))
 
 ;; #############################################################################
 ;; #                                                                           #
@@ -144,14 +140,28 @@
 ;; Настройки для IRC
 (use-package rcirc
   :init
+  ;; Аутентификация на сервере перед подключением к каналам
   (setq rcirc-authenticate-before-join t)
+  ;; Подсветка никнеймов
   (setq rcirc-bright-nicks (quote ("wvc")))
+  ;; Стандартный никнейм
   (setq rcirc-default-nick "wvc")
   (setq rcirc-prompt "%n@%t: ")
+  ;; Список серверов и каналов
   (setq rcirc-server-alist
    (quote
     (("irc.freenode.net" :channels
-      ("#em.slashem.me" "#hardfought" "#nethack"))))))
+      ("#em.slashem.me" "#hardfought" "#nethack")))))
+  ;; Уведомления в модлайне
+  (add-hook 'rcirc-mode-hook
+	    (lambda ()
+	      (rcirc-track-minor-mode 1)))
+  ;; Хук для того чтобы буфер с IRC автоматически скроллился
+  ;; и строка отправки сообщения оставалась внизу экрана
+  (add-hook 'rcirc-mode-hook
+	    (lambda ()
+	      (set (make-local-variable 'scroll-conservatively)
+		   8192))))
 
 ;; Автодополнение
 (use-package company
