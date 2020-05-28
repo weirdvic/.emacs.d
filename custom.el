@@ -11,4 +11,4 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (use-package reverse-im rainbow-delimiters racket-mode mood-line lsp-ui go-mode exec-path-from-shell dockerfile-mode docker-compose-mode company-ansible ansible-vault ansible-doc ansible))))
+    (ag use-package reverse-im rainbow-delimiters racket-mode mood-line lsp-ui go-mode exec-path-from-shell dockerfile-mode docker-compose-mode company-ansible ansible-vault ansible-doc ansible))))

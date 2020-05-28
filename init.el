@@ -112,6 +112,9 @@
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
+;; The Silver Searcher -- ag, утилита для рекурсивного поиска в директориях
+(use-package ag
+  :ensure t)
 ;; IDO плагин
 (use-package ido
   :ensure t
