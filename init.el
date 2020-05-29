@@ -37,7 +37,7 @@
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (setq-default frame-title-format '("%f")))
+  (setq-default frame-title-format '("%f [%m]")))
 
 ;; Вводимый текст перезаписывает выделенный
 (delete-selection-mode t)
@@ -91,7 +91,7 @@
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
 ;; открытом виде в init.el
-(use-package epa-file
+(use-package epg
   :config
   (epa-file-enable)
   (setq secrets-file (expand-file-name "secrets.el.gpg" user-emacs-directory))
