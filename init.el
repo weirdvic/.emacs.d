@@ -36,7 +36,8 @@
 (when (window-system)
   (menu-bar-mode -1)
   (tool-bar-mode -1)
-  (scroll-bar-mode -1))
+  (scroll-bar-mode -1)
+  (setq-default frame-title-format '("%f")))
 
 ;; Вводимый текст перезаписывает выделенный
 (delete-selection-mode t)
