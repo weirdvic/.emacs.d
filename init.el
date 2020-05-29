@@ -5,8 +5,15 @@
         ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 
-(eval-when-compile
-  (require 'use-package))
+;;; Если пакет use-package не установлен, его нужно скачать и
+;;; установить
+(unless (package-installed-p 'use-package)
+  (message "Emacs will install use-package.el")
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(require 'use-package)
+(setq use-package-always-ensure t)
 
 ;; Перенести переменные, создаваемые Custom в отдельный файл
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))

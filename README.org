@@ -1,2 +1,13 @@
 * Мой .emacs.d
 Репозиторий для хранения конфигурации emacs.
+
+** Как склонировать этот репозиторий поверх уже существующего 
+#+begin_src sh
+cd ~/.emacs.d
+git init
+git remote add origin git@github.com:weirdvic/.emacs.d.git
+git fetch
+git reset origin/master
+git reset --hard HEAD
+git checkout -t origin/master
+#+end_src
