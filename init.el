@@ -31,9 +31,13 @@
 ;; Отключение элементов интерфейса
 (setq inhibit-splash-screen   t)
 (setq inhibit-startup-message t)
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
+
+;; Отдельные настройки для GUI версии
+(when (window-system)
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1))
+
 ;; Вводимый текст перезаписывает выделенный
 (delete-selection-mode t)
  ;; Добавить новую пустую строку в конец файла при сохранении
