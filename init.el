@@ -174,6 +174,11 @@
 	    (lambda ()
 	      (set (make-local-variable 'scroll-conservatively)
 		   8192))))
+;; Разноцветные ники в IRC
+(use-package rcirc-color
+  :ensure t
+  :config
+  (eval-after-load 'rcirc '(require 'rcirc-color)))
 
 ;; Автодополнение
 (use-package company
