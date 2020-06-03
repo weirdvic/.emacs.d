@@ -78,6 +78,8 @@
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
 (global-set-key (kbd "C-q") 'undo)
 (global-set-key (kbd "C-z") 'quoted-insert)
+;; Переключить комментарии выделенного фрагмента по C-c C-k
+(define-key prog-mode-map (kbd "C-c C-k") 'comment-or-uncomment-region)
 ;; Прокрутка по одной линии за раз
 (setq scroll-step 1)
 
@@ -235,11 +237,14 @@
 (use-package eglot
   :ensure t
   :config
-  (setq eglot-auto-display-help-buffer t)
-  (setq	)
+  (setq eglot-put-doc-in-help-buffer t)
   (define-key eglot-mode-map (kbd "M-.") 'xref-find-definitions)
   (define-key eglot-mode-map (kbd "M-,") 'pop-tag-mark)
-  (add-to-list 'eglot-server-programs '((go-mode . ("gopls")) (python-mode . ("pyls")))))
+  (add-to-list 'eglot-server-programs '(go-mode . ("gopls")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyls")))
+  :hook
+  (go-mode . eglot-ensure)
+  (python-mode . eglot-ensure))
 
 ;; Racket mode для работы с Scheme
 (use-package racket-mode
