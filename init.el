@@ -218,16 +218,6 @@
   :config
   (global-set-key (kbd "C-x g") 'magit-status))
 
-;; Настройки yasnippet
-(use-package yasnippet
-  :ensure t
-  :config
-  (yas-reload-all)
-  :hook (prog-mode . yas-minor-mode)  
-  )
-(use-package yasnippet-snippets
-  :ensure t)
-
 ;; Автодополнение для Go при помощи gopls
 ;; Базовый пакет для поддержки Go
 (use-package go-mode
