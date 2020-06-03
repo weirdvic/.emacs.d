@@ -11,7 +11,6 @@
   (message "Emacs will install use-package.el")
   (package-refresh-contents)
   (package-install 'use-package))
-
 (require 'use-package)
 (setq use-package-always-ensure t)
 
@@ -149,6 +148,16 @@
   (reverse-im-input-methods '("russian-computer"))
   :config
   (reverse-im-mode t))
+
+;; Подсказывать справку по доступным сочетаниям при нажатии
+;; C-h во время ввода сочетания.
+(use-package which-key
+  :config
+  (setq which-key-show-early-on-C-h t)
+  (setq which-key-idle-delay 10000)
+  (setq which-key-idle-secondary-delay 0.05)
+  (which-key-mode)
+  )
 
 ;; Настройки для IRC
 (use-package rcirc
