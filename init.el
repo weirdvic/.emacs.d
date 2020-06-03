@@ -212,6 +212,10 @@
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   )
 
+;; Настройки Magit
+(use-package magit
+  :ensure t)
+
 ;; Настройки yasnippet
 (use-package yasnippet
   :ensure t

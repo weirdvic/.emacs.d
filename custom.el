@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (which-key yasnippet-snippets racket-mode eglot exec-path-from-shell go-mode yasnippet projectile company-ansible company rcirc-color reverse-im ag rainbow-delimiters mood-line dockerfile-mode docker-compose-mode ansible-vault ansible-doc ansible use-package))))
+    (magit which-key yasnippet-snippets racket-mode eglot exec-path-from-shell go-mode yasnippet projectile company-ansible company rcirc-color reverse-im ag rainbow-delimiters mood-line dockerfile-mode docker-compose-mode ansible-vault ansible-doc ansible use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
