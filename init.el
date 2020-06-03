@@ -123,6 +123,7 @@
 ;; The Silver Searcher -- ag, утилита для рекурсивного поиска в директориях
 (use-package ag
   :ensure t)
+
 ;; IDO плагин
 (use-package ido
   :ensure t
@@ -180,7 +181,7 @@
   :config
   (eval-after-load 'rcirc '(require 'rcirc-color)))
 
-;; Автодополнение
+;; Настройки Company
 (use-package company
   :ensure t
   :config
@@ -190,6 +191,24 @@
   (add-hook 'after-init-hook 'global-company-mode))
 
 (use-package company-ansible
+  :ensure t)
+
+;; Настройки Projectile
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  )
+
+;; Настройки yasnippet
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-reload-all)
+  :hook (prog-mode . yas-minor-mode)  
+  )
+(use-package yasnippet-snippets
   :ensure t)
 
 ;; Автодополнение для Go при помощи gopls
@@ -203,23 +222,15 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
-(use-package lsp-mode
+;; Автодополнение для Go и Python
+(use-package eglot
   :ensure t
-  :commands (lsp lsp-deferred)
-  :hook (go-mode . lsp-deferred))
-
-(defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t))
-  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
-
-(setq lsp-register-custom-settings
-      '(("gopls.completeUnimported" t t)
-	("gopls.staticcheck" t t)))
-
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode)
+  :config
+  (setq eglot-auto-display-help-buffer t)
+  (setq	)
+  (define-key eglot-mode-map (kbd "M-.") 'xref-find-definitions)
+  (define-key eglot-mode-map (kbd "M-,") 'pop-tag-mark)
+  (add-to-list 'eglot-server-programs '((go-mode . ("gopls")) (python-mode . ("pyls")))))
 
 ;; Racket mode для работы с Scheme
 (use-package racket-mode
