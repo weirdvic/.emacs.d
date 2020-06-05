@@ -117,7 +117,9 @@
 ;; PDF-tools для чтения pdf в Emacs. После установки на новой системе выполнить:
 ;; (pdf-tools-install)
 (use-package pdf-tools
-  :ensure t)
+  :ensure t
+  :config
+  (pdf-tools-install))
 
 ;; Улучшенный модлайн
 (use-package mood-line
