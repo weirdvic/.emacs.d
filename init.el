@@ -51,11 +51,12 @@
 (setq make-backup-files        nil)
 (setq auto-save-default        nil)
 (setq auto-save-list-file-name nil)
-;; Отсутствие строки выделить глифами
+;; Пустые строки выделить глифами
 (setq-default indicate-empty-lines t)
 ;; Переносить по словам
 (setq word-wrap t)
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+;; Отображать номера строк в буферах с исходниками
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 ;; При вводе парного элемента (скобки, кавычки), автоматически добавлять
 ;; закрывающий элемент и ставить курсор между элементами
@@ -99,15 +100,23 @@
   (when (file-exists-p secrets-file)
   (load secrets-file)))
 
+;; Настройки Ansible
 (use-package ansible
   :ensure t)
 (use-package ansible-doc
   :ensure t)
 (use-package ansible-vault
   :ensure t)
+
+;; Настройки Docker
 (use-package docker-compose-mode
   :ensure t)
 (use-package dockerfile-mode
+  :ensure t)
+
+;; PDF-tools для чтения pdf в Emacs. После установки на новой системе выполнить:
+;; (pdf-tools-install)
+(use-package pdf-tools
   :ensure t)
 
 ;; Улучшенный модлайн
@@ -200,7 +209,6 @@
   (setq company-minimum-prefix-length 1)
   (add-to-list 'company-backends 'company-ansible)
   (add-hook 'after-init-hook 'global-company-mode))
-
 (use-package company-ansible
   :ensure t)
 
@@ -251,4 +259,3 @@
   (add-hook 'racket-mode-hook
 	    (lambda ()
 	      (define-key racket-mode-map (kbd "<f5>") 'racket-run))))
-
