@@ -182,9 +182,9 @@
   (setq rcirc-prompt "%n@%t: ")
   ;; Список серверов и каналов
   (setq rcirc-server-alist
-   (quote
-    (("irc.freenode.net" :channels
-      ("#em.slashem.me" "#hardfought" "#nethack")))))
+	(quote
+	 (("irc.freenode.net" :channels
+	   ("#em.slashem.me" "#hardfought" "#nethack")))))
   ;; Уведомления в модлайне
   (add-hook 'rcirc-mode-hook
 	    (lambda ()
@@ -195,11 +195,6 @@
 	    (lambda ()
 	      (set (make-local-variable 'scroll-conservatively)
 		   8192))))
-;; Разноцветные ники в IRC
-(use-package rcirc-color
-  :ensure t
-  :config
-  (eval-after-load 'rcirc '(require 'rcirc-color)))
 
 ;; Настройки Company
 (use-package company
