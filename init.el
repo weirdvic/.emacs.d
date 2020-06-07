@@ -36,7 +36,12 @@
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (setq-default frame-title-format '("%f [%m]")))
+  (setq-default frame-title-format '("%f [%m]"))
+  ;; PDF-tools для чтения pdf в Emacs
+  (use-package pdf-tools
+    :ensure t
+    :config
+    (pdf-tools-install)))
 
 ;; Вводимый текст перезаписывает выделенный
 (delete-selection-mode t)
@@ -113,13 +118,6 @@
   :ensure t)
 (use-package dockerfile-mode
   :ensure t)
-
-;; PDF-tools для чтения pdf в Emacs. После установки на новой системе выполнить:
-;; (pdf-tools-install)
-(use-package pdf-tools
-  :ensure t
-  :config
-  (pdf-tools-install))
 
 ;; Улучшенный модлайн
 (use-package mood-line
