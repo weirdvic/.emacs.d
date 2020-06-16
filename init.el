@@ -136,11 +136,18 @@
   :ensure t)
 
 ;; Настройки eshell
+(use-package eshell-prompt-extras
+  :ensure t
+  :after (eshell esh-opt)
+  :custom
+  (eshell-prompt-function #'epe-theme-dakrone))
+(use-package esh-autosuggest
+  :ensure t
+  :hook (eshell-mode . esh-autosuggest-mode))
 (use-package eshell-toggle
   :ensure t
   :config
-  (global-set-key (kbd "C-`") 'eshell-toggle)
-  )
+  (global-set-key (kbd "C-`") 'eshell-toggle))
 
 ;; IDO плагин
 (use-package ido
