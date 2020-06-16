@@ -63,6 +63,7 @@
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 ;; Отображать номера строк в буферах с исходниками
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook 'hl-line-mode)
 ;; При вводе парного элемента (скобки, кавычки), автоматически добавлять
 ;; закрывающий элемент и ставить курсор между элементами
 (electric-pair-mode t)
