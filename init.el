@@ -267,6 +267,11 @@
   :config
   (reverse-im-mode t))
 
+;; Интерфейс для управления Transmission на домашнем сервере
+(use-package transmission
+  :after (epg)
+  :ensure t)
+
 ;; Подсказывать справку по доступным сочетаниям при нажатии
 ;; C-h во время ввода сочетания.
 (use-package which-key
