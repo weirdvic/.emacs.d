@@ -63,7 +63,6 @@
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 ;; Отображать номера строк в буферах с исходниками
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'prog-mode-hook 'hl-line-mode)
 ;; При вводе парного элемента (скобки, кавычки), автоматически добавлять
 ;; закрывающий элемент и ставить курсор между элементами
 (electric-pair-mode t)
@@ -139,15 +138,22 @@
 (use-package eshell-prompt-extras
   :ensure t
   :after (eshell esh-opt)
-  :custom
-  (eshell-prompt-function #'epe-theme-dakrone))
+  :config
+  (with-eval-after-load "esh-opt"
+  (autoload 'epe-theme-dakrone "eshell-prompt-extras")
+  (setq eshell-highlight-prompt nil
+        eshell-prompt-function 'epe-theme-dakrone)))
 (use-package esh-autosuggest
   :ensure t
   :hook (eshell-mode . esh-autosuggest-mode))
 (use-package eshell-toggle
   :ensure t
-  :config
-  (global-set-key (kbd "C-`") 'eshell-toggle))
+  :custom
+  (eshell-toggle-size-fraction 3)
+  (eshell-toggle-use-projectile-root t)
+  (eshell-toggle-run-command nil)
+  :bind
+  ("C-`" . eshell-toggle))
 
 ;; IDO плагин
 (use-package ido
