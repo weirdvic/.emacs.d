@@ -134,6 +134,13 @@
 (use-package ag
   :ensure t)
 
+;; Настройки eshell
+(use-package eshell-toggle
+  :ensure t
+  :config
+  (global-set-key (kbd "C-`") 'eshell-toggle)
+  )
+
 ;; IDO плагин
 (use-package ido
   :ensure t
