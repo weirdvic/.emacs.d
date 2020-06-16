@@ -95,15 +95,9 @@
 ;; #                                                                           #
 ;; #############################################################################
 
-;; Включаем прозрачное шифрование файлов при помощи GPG
-;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
-;; открытом виде в init.el
-(use-package epg
-  :config
-  (epa-file-enable)
-  (setq secrets-file (expand-file-name "secrets.el.gpg" user-emacs-directory))
-  (when (file-exists-p secrets-file)
-  (load secrets-file)))
+;; The Silver Searcher -- ag, утилита для рекурсивного поиска в директориях
+(use-package ag
+  :ensure t)
 
 ;; Настройки Ansible
 (use-package ansible
@@ -113,26 +107,53 @@
 (use-package ansible-vault
   :ensure t)
 
+;; Управление буферами и список буферов по C-x C-b
+(use-package bs
+  :ensure t)
+(use-package ibuffer
+  :ensure t
+  :config
+  (defalias 'list-buffers 'ibuffer))
+
+;; Настройки Company
+(use-package company
+  :ensure t
+  :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 1)
+  (add-to-list 'company-backends 'company-ansible)
+  (add-hook 'after-init-hook 'global-company-mode))
+(use-package company-ansible
+  :ensure t)
+
 ;; Настройки Docker
 (use-package docker-compose-mode
   :ensure t)
 (use-package dockerfile-mode
   :ensure t)
 
-;; Улучшенный модлайн
-(use-package mood-line
+;; Автодополнение для Go и Python
+(use-package eglot
   :ensure t
   :config
-  (mood-line-mode))
+  (setq eglot-put-doc-in-help-buffer t)
+  (define-key eglot-mode-map (kbd "M-.") 'xref-find-definitions)
+  (define-key eglot-mode-map (kbd "M-,") 'pop-tag-mark)
+  (add-to-list 'eglot-server-programs '(go-mode . ("gopls")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyls")))
+  :hook
+  (go-mode . eglot-ensure)
+  (python-mode . eglot-ensure))
 
-;; Подсветка скобок
-(use-package rainbow-delimiters
-  :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode))
-
-;; The Silver Searcher -- ag, утилита для рекурсивного поиска в директориях
-(use-package ag
-  :ensure t)
+;; Включаем прозрачное шифрование файлов при помощи GPG
+;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
+;; открытом виде в init.el
+(use-package epg
+  :config
+  (epa-file-enable)
+  (setq secrets-file (expand-file-name "secrets.el.gpg" user-emacs-directory))
+  (when (file-exists-p secrets-file)
+  (load secrets-file)))
 
 ;; Настройки eshell
 (use-package eshell-prompt-extras
@@ -155,6 +176,17 @@
   :bind
   ("C-`" . eshell-toggle))
 
+;; Получать значение $PATH из шелла
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+
+;; Базовый пакет для поддержки Go
+(use-package go-mode
+  :ensure t)
+
 ;; IDO плагин
 (use-package ido
   :ensure t
@@ -165,34 +197,44 @@
   (setq ido-virtual-buffers t)
   (setq ido-enable-flex-matching t))
 
-;; Управление буферами и список буферов по C-x C-b
-(use-package bs
-  :ensure t)
-(use-package ibuffer
+;; Настройки Magit
+(use-package magit
   :ensure t
   :config
-  (defalias 'list-buffers 'ibuffer))
+  (global-set-key (kbd "C-x g") 'magit-status))
 
-;; Пакет для работы клавиш емакса в русской раскладке
-(use-package reverse-im
+;; Улучшенный модлайн
+(use-package mood-line
   :ensure t
-  :custom
-  (reverse-im-input-methods '("russian-computer"))
   :config
-  (reverse-im-mode t))
+  (mood-line-mode))
 
-;; Подсказывать справку по доступным сочетаниям при нажатии
-;; C-h во время ввода сочетания.
-(use-package which-key
+;; Настройки Projectile
+(use-package projectile
+  :ensure t
   :config
-  (setq which-key-show-early-on-C-h t)
-  (setq which-key-idle-delay 10000)
-  (setq which-key-idle-secondary-delay 0.05)
-  (which-key-mode)
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   )
+
+;; Racket mode для работы с Scheme
+(use-package racket-mode
+  :ensure t
+  :mode "\\.scm\\'"
+  :config
+  ;; Запуск кода по нажатию F5
+  (add-hook 'racket-mode-hook
+	    (lambda ()
+	      (define-key racket-mode-map (kbd "<f5>") 'racket-run))))
+
+;; Подсветка скобок
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; Настройки для IRC
 (use-package rcirc
+  :after (epg)
   :init
   ;; Аутентификация на сервере перед подключением к каналам
   (setq rcirc-authenticate-before-join t)
@@ -217,61 +259,19 @@
 	      (set (make-local-variable 'scroll-conservatively)
 		   8192))))
 
-;; Настройки Company
-(use-package company
+;; Пакет для работы клавиш емакса в русской раскладке
+(use-package reverse-im
   :ensure t
+  :custom
+  (reverse-im-input-methods '("russian-computer"))
   :config
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 1)
-  (add-to-list 'company-backends 'company-ansible)
-  (add-hook 'after-init-hook 'global-company-mode))
-(use-package company-ansible
-  :ensure t)
+  (reverse-im-mode t))
 
-;; Настройки Projectile
-(use-package projectile
-  :ensure t
+;; Подсказывать справку по доступным сочетаниям при нажатии
+;; C-h во время ввода сочетания.
+(use-package which-key
   :config
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  )
-
-;; Настройки Magit
-(use-package magit
-  :ensure t
-  :config
-  (global-set-key (kbd "C-x g") 'magit-status))
-
-;; Автодополнение для Go при помощи gopls
-;; Базовый пакет для поддержки Go
-(use-package go-mode
-  :ensure t)
-;; Это нужно чтобы получить значение $PATH из шелла
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize)))
-
-;; Автодополнение для Go и Python
-(use-package eglot
-  :ensure t
-  :config
-  (setq eglot-put-doc-in-help-buffer t)
-  (define-key eglot-mode-map (kbd "M-.") 'xref-find-definitions)
-  (define-key eglot-mode-map (kbd "M-,") 'pop-tag-mark)
-  (add-to-list 'eglot-server-programs '(go-mode . ("gopls")))
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyls")))
-  :hook
-  (go-mode . eglot-ensure)
-  (python-mode . eglot-ensure))
-
-;; Racket mode для работы с Scheme
-(use-package racket-mode
-  :ensure t
-  :mode "\\.scm\\'"
-  :config
-  ;; Запуск кода по нажатию F5
-  (add-hook 'racket-mode-hook
-	    (lambda ()
-	      (define-key racket-mode-map (kbd "<f5>") 'racket-run))))
+  (setq which-key-show-early-on-C-h t)
+  (setq which-key-idle-delay 10000)
+  (setq which-key-idle-secondary-delay 0.05)
+  (which-key-mode))
