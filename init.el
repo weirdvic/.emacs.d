@@ -284,3 +284,10 @@
   (setq which-key-idle-delay 10000)
   (setq which-key-idle-secondary-delay 0.05)
   (which-key-mode))
+
+;; Отмечать строки длиннее 80 символов
+(use-package whitespace
+  :ensure t
+  :config
+  (setq whitespace-style '(face empty tabs lines-tail trailing))
+  (global-whitespace-mode t))
