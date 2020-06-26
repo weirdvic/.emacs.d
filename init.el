@@ -43,6 +43,10 @@
     :config
     (pdf-tools-install)))
 
+;; Использовать 4 пробела вместо табуляции
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq indent-line-function 'insert-tab)
 ;; Вводимый текст перезаписывает выделенный
 (delete-selection-mode t)
  ;; Добавить новую пустую строку в конец файла при сохранении
