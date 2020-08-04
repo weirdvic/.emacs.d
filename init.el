@@ -47,6 +47,8 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (setq indent-line-function 'insert-tab)
+;; Перед сохранением файла удалять пробелы в конце строк
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 ;; Вводимый текст перезаписывает выделенный
 (delete-selection-mode t)
  ;; Добавить новую пустую строку в конец файла при сохранении
@@ -103,7 +105,7 @@
 (use-package ag
   :ensure t)
 
-;; Настройки Ansible
+;; Настройки для работы с Ansible
 (use-package ansible
   :ensure t)
 (use-package ansible-doc
@@ -130,7 +132,7 @@
 (use-package company-ansible
   :ensure t)
 
-;; Настройки Docker
+;; Настройки для работы с Docker
 (use-package docker-compose-mode
   :ensure t)
 (use-package dockerfile-mode
@@ -158,27 +160,6 @@
   (setq secrets-file (expand-file-name "secrets.el.gpg" user-emacs-directory))
   (when (file-exists-p secrets-file)
   (load secrets-file)))
-
-;; Настройки eshell
-(use-package eshell-prompt-extras
-  :ensure t
-  :after (eshell esh-opt)
-  :config
-  (with-eval-after-load "esh-opt"
-  (autoload 'epe-theme-dakrone "eshell-prompt-extras")
-  (setq eshell-highlight-prompt nil
-        eshell-prompt-function 'epe-theme-dakrone)))
-(use-package esh-autosuggest
-  :ensure t
-  :hook (eshell-mode . esh-autosuggest-mode))
-(use-package eshell-toggle
-  :ensure t
-  :custom
-  (eshell-toggle-size-fraction 3)
-  (eshell-toggle-use-projectile-root t)
-  (eshell-toggle-run-command nil)
-  :bind
-  ("C-`" . eshell-toggle))
 
 ;; Получать значение $PATH из шелла
 (use-package exec-path-from-shell
@@ -284,10 +265,3 @@
   (setq which-key-idle-delay 10000)
   (setq which-key-idle-secondary-delay 0.05)
   (which-key-mode))
-
-;; Отмечать строки длиннее 80 символов
-(use-package whitespace
-  :ensure t
-  :config
-  (setq whitespace-style '(face empty tabs lines-tail trailing))
-  (global-whitespace-mode t))
