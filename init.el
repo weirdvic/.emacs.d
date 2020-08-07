@@ -46,7 +46,6 @@
 ;; Использовать 4 пробела вместо табуляции
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
-(setq indent-line-function 'insert-tab)
 ;; Перед сохранением файла удалять пробелы в конце строк
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 ;; Вводимый текст перезаписывает выделенный
@@ -76,7 +75,7 @@
 ;; Дни недели и месяцы на русском языке
 (setq calendar-week-start-day 1
       calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
-      calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май" 
+      calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май"
                                  "Июнь" "Июль" "Август" "Сентябрь"
                                  "Октябрь" "Ноябрь" "Декабрь"])
 ;; Отображение времени в 24 часовом формате вместо AM/PM
