@@ -25,8 +25,6 @@
 ;; #                                                                           #
 ;; #############################################################################
 
-;; Цветовая схема
-(load-theme 'tango-dark t)
 ;; Отключение элементов интерфейса
 (setq inhibit-splash-screen   t)
 (setq inhibit-startup-message t)
@@ -192,6 +190,12 @@
   :ensure t
   :config
   (mood-line-mode))
+
+;; Цветовая схема
+(use-package nord-theme
+  :ensure t
+  :init
+  (load-theme 'nord t))
 
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc
