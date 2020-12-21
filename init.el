@@ -276,16 +276,7 @@
 
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
-  :ensure t
-  :config
-  (set-face-attribute 'vterm-color-black nil :foreground "#232627" :background "#7f8c8d")
-  (set-face-attribute 'vterm-color-red nil :foreground "#ed1515" :background "#c0392b")
-  (set-face-attribute 'vterm-color-green nil :foreground "#11d116" :background "#1cdc9a")
-  (set-face-attribute 'vterm-color-yellow nil :foreground "#f67400" :background "#fdbc4b")
-  (set-face-attribute 'vterm-color-blue nil :foreground "#1d99f3" :background "#3daee9")
-  (set-face-attribute 'vterm-color-magenta nil :foreground "#9b59b6" :background "#8e44ad")
-  (set-face-attribute 'vterm-color-cyan nil :foreground "#1abc9c" :background "#16a085")
-  (set-face-attribute 'vterm-color-white nil :foreground "#fcfcfc" :background "#ffffff"))
+  :ensure t)
 
 ;; Подсказывать справку по доступным сочетаниям при нажатии
 ;; C-h во время ввода сочетания.
