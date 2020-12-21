@@ -270,6 +270,10 @@
   :after (epg)
   :ensure t)
 
+;; Пакет vterm для эмулятора терминала внутри Emacs
+(use-package vterm
+  :ensure t)
+
 ;; Подсказывать справку по доступным сочетаниям при нажатии
 ;; C-h во время ввода сочетания.
 (use-package which-key
