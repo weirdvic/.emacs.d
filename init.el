@@ -41,6 +41,9 @@
     :config
     (pdf-tools-install)))
 
+;; Использование desktop.el для сохранения состояния фрейма и окон
+(desktop-save-mode 1)
+
 ;; Использовать 4 пробела вместо табуляции
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
