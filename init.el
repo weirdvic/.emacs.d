@@ -165,6 +165,12 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
+;; Eyebrowse для работы с раскладками окон
+(use-package eyebrowse
+  :ensure t
+  :config
+  (eyebrowse-mode t))
+
 ;; Базовый пакет для поддержки Go
 (use-package go-mode
   :ensure t)
