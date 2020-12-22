@@ -278,11 +278,6 @@
   :config
   (reverse-im-mode t))
 
-;; Интерфейс для управления Transmission на домашнем сервере
-(use-package transmission
-  :after (epg)
-  :ensure t)
-
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
   :ensure t)
