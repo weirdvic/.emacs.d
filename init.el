@@ -138,19 +138,6 @@
 (use-package dockerfile-mode
   :ensure t)
 
-;; Автодополнение для Go и Python
-(use-package eglot
-  :ensure t
-  :config
-  (setq eglot-put-doc-in-help-buffer t)
-  (define-key eglot-mode-map (kbd "M-.") 'xref-find-definitions)
-  (define-key eglot-mode-map (kbd "M-,") 'pop-tag-mark)
-  (add-to-list 'eglot-server-programs '(go-mode . ("gopls")))
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyls")))
-  :hook
-  (go-mode . eglot-ensure)
-  (python-mode . eglot-ensure))
-
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
 ;; открытом виде в init.el
@@ -187,6 +174,26 @@
   (icomplete-mode t)
   (setq ido-virtual-buffers t)
   (setq ido-enable-flex-matching t))
+
+;; Настройки lsp-mode для python и go
+;; https://emacs-lsp.github.io/lsp-mode/page/installation/
+
+;; Префикс для lsp-command-keymap
+(setq lsp-keymap-prefix "C-c l")
+
+(use-package lsp-mode
+  :ensure t
+  :hook (
+         (go-mode . lsp)
+         (python-mode . lsp)
+         ;; Интеграция с which-key
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+
+;; Дополнительно
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
 
 ;; Настройки Magit
 (use-package magit
