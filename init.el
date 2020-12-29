@@ -5,8 +5,7 @@
         ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 
-;;; Если пакет use-package не установлен, его нужно скачать и
-;;; установить
+;; Если пакет use-package не установлен, его нужно скачать и установить
 (unless (package-installed-p 'use-package)
   (message "Emacs will install use-package.el")
   (package-refresh-contents)
@@ -293,20 +292,15 @@
 (use-package vterm-toggle
   :ensure t
   :after (vterm)
+  :bind (("s-z" . vterm-toggle)
+         ("s-Z" . vterm-toggle-cd)
+         ("s->" . vterm-toggle-forward)
+         ("s-<" . vterm-toggle-backward))
   :config
-  (global-set-key (kbd "C-`") 'vterm-toggle)
-  (global-set-key (kbd "C-~") 'vterm-toggle-cd)
-  (define-key vterm-mode-map (kbd "S-s-n")   'vterm-toggle-forward)
-  (define-key vterm-mode-map (kbd "S-s-p")   'vterm-toggle-backward)
   (setq vterm-toggle-fullscreen-p nil)
   (add-to-list 'display-buffer-alist
                '((lambda(bufname _) (with-current-buffer bufname (equal major-mode 'vterm-mode)))
-                 (display-buffer-reuse-window display-buffer-at-bottom)
-                 (display-buffer-reuse-window display-buffer-in-direction)
-                 (direction . bottom)
-                 (dedicated . t)
-                 (reusable-frames . visible)
-                 (window-height . 0.3))))
+                 (display-buffer-reuse-window display-buffer-same-window))))
 
 ;; Подсказывать справку по доступным сочетаниям при нажатии
 ;; C-h во время ввода сочетания.
