@@ -33,7 +33,7 @@
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (setq-default frame-title-format '("%f [%m]"))
+  (setq-default frame-title-format '("" "%b @ Emacs " emacs-version))
   ;; PDF-tools для чтения pdf в Emacs
   (use-package pdf-tools
     :ensure t
@@ -286,7 +286,10 @@
 
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
-  :ensure t)
+  :ensure t
+  :config
+  (setq vterm-kill-buffer-on-exit t)
+  (setq vterm-buffer-name-string "vterm %s"))
 
 ;; Дополнение vterm-toggle для быстрого доступа к терминалу в любом буфере
 (use-package vterm-toggle
