@@ -209,22 +209,13 @@
 ;; Цветовая схема
 (use-package nord-theme
   :ensure t
-  :init
+  :config
   (load-theme 'nord t))
+
 
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc
   :ensure t)
-
-;; PlantUML для рисования диаграмм
-;; По пути ~/.emacs.d/plantuml.jar должен лежать jar файл PlantUML
-(use-package plantuml-mode
-  :ensure t
-  :config
-  (setq org-plantuml-jar-path (expand-file-name "~/.emacs.d/plantuml.jar"))
-  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
-  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
-  )
 
 ;; Настройки Projectile
 (use-package projectile
