@@ -297,10 +297,15 @@
                  (display-buffer-reuse-window display-buffer-same-window))))
 
 ;; Подсказывать справку по доступным сочетаниям при нажатии
-;; C-h во время ввода сочетания.
+;; C-h во время ввода сочетания
 (use-package which-key
   :config
   (setq which-key-show-early-on-C-h t)
   (setq which-key-idle-delay 10000)
   (setq which-key-idle-secondary-delay 0.05)
   (which-key-mode))
+
+;; Зум отдельного окна на весь фрейм, как C-b z в tmux
+(use-package zygospore
+  :ensure t
+  :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
