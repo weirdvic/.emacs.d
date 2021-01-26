@@ -162,7 +162,11 @@
 
 ;; Базовый пакет для поддержки Go
 (use-package go-mode
-  :ensure t)
+  :ensure t
+  ;; Перед сохранением файла форматировать код и сортировать импорты
+  :hook ((go-mode . lsp-deferred)
+         (before-save . lsp-format-buffer)
+         (before-save . lsp-organize-imports)))
 
 ;; IDO плагин
 (use-package ido
