@@ -162,6 +162,7 @@
 
 ;; Базовый пакет для поддержки Go
 (use-package go-mode
+  :after (lsp-mode)
   :ensure t
   ;; Перед сохранением файла форматировать код и сортировать импорты
   :hook ((go-mode . lsp-deferred)
@@ -210,12 +211,11 @@
   :config
   (mood-line-mode))
 
-;; Цветовая схема
-(use-package nord-theme
+;; Цветовые схемы
+(use-package nova-theme
   :ensure t
   :config
-  (load-theme 'nord t))
-
+  (load-theme 'nova t))
 
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc
@@ -278,6 +278,13 @@
   (reverse-im-input-methods '("russian-computer"))
   :config
   (reverse-im-mode t))
+
+;; Пакет для автоматического использования su/sudo для редактирования файлов
+;; в случае если файл не может быть отредактирован текущим пользователем
+(use-package su
+  :ensure t
+  :config
+  (su-mode +1))
 
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
