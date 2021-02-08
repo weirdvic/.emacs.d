@@ -131,6 +131,10 @@
 (use-package company-ansible
   :ensure)
 
+;; Улучшенная работа с crontab файлами
+(use-package crontab-mode
+  :ensure)
+
 ;; Настройки для работы с Docker
 (use-package docker-compose-mode
   :ensure)
