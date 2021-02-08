@@ -36,7 +36,7 @@
   (setq-default frame-title-format '("" "%b @ Emacs " emacs-version))
   ;; PDF-tools для чтения pdf в Emacs
   (use-package pdf-tools
-    :ensure t
+    :ensure
     :config
     (pdf-tools-install)))
 
@@ -102,40 +102,40 @@
 
 ;; The Silver Searcher -- ag, утилита для рекурсивного поиска в директориях
 (use-package ag
-  :ensure t)
+  :ensure)
 
 ;; Настройки для работы с Ansible
 (use-package ansible
-  :ensure t)
+  :ensure)
 (use-package ansible-doc
-  :ensure t)
+  :ensure)
 (use-package ansible-vault
-  :ensure t)
+  :ensure)
 
 ;; Управление буферами и список буферов по C-x C-b
 (use-package bs
-  :ensure t)
+  :ensure)
 (use-package ibuffer
-  :ensure t
+  :ensure
   :config
   (defalias 'list-buffers 'ibuffer))
 
 ;; Настройки Company
 (use-package company
-  :ensure t
+  :ensure
   :config
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 1)
   (add-to-list 'company-backends 'company-ansible)
   (add-hook 'after-init-hook 'global-company-mode))
 (use-package company-ansible
-  :ensure t)
+  :ensure)
 
 ;; Настройки для работы с Docker
 (use-package docker-compose-mode
-  :ensure t)
+  :ensure)
 (use-package dockerfile-mode
-  :ensure t)
+  :ensure)
 
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
@@ -149,21 +149,21 @@
 
 ;; Получать значение $PATH из шелла
 (use-package exec-path-from-shell
-  :ensure t
+  :ensure
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
 ;; Eyebrowse для работы с раскладками окон
 (use-package eyebrowse
-  :ensure t
+  :ensure
   :config
   (eyebrowse-mode t))
 
 ;; Базовый пакет для поддержки Go
 (use-package go-mode
   :after (lsp-mode)
-  :ensure t
+  :ensure
   ;; Перед сохранением файла форматировать код и сортировать импорты
   :hook ((go-mode . lsp-deferred)
          (before-save . lsp-format-buffer)
@@ -171,7 +171,7 @@
 
 ;; IDO плагин
 (use-package ido
-  :ensure t
+  :ensure
   :config
   (ido-mode t)
   (ido-everywhere t)
@@ -186,7 +186,7 @@
 (setq lsp-keymap-prefix "C-c l")
 
 (use-package lsp-mode
-  :ensure t
+  :ensure
   :hook (
          (go-mode . lsp)
          (python-mode . lsp)
@@ -196,34 +196,34 @@
 
 ;; Дополнительно
 (use-package lsp-ui
-  :ensure t
+  :ensure
   :commands lsp-ui-mode)
 
 ;; Настройки Magit
 (use-package magit
-  :ensure t
+  :ensure
   :config
   (global-set-key (kbd "C-x g") 'magit-status))
 
 ;; Улучшенный модлайн
 (use-package mood-line
-  :ensure t
+  :ensure
   :config
   (mood-line-mode))
 
 ;; Цветовые схемы
-(use-package nova-theme
-  :ensure t
+(use-package nord-theme
+  :ensure
   :config
-  (load-theme 'nova t))
+  (load-theme 'nord t))
 
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc
-  :ensure t)
+  :ensure)
 
 ;; Настройки Projectile
 (use-package projectile
-  :ensure t
+  :ensure
   :config
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
@@ -231,7 +231,7 @@
 
 ;; Racket mode для работы с Scheme
 (use-package racket-mode
-  :ensure t
+  :ensure
   :mode "\\.scm\\'"
   :config
   ;; Запуск кода по нажатию F5
@@ -241,7 +241,7 @@
 
 ;; Подсветка скобок
 (use-package rainbow-delimiters
-  :ensure t
+  :ensure
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; Настройки для IRC
@@ -273,7 +273,7 @@
 
 ;; Пакет для работы клавиш емакса в русской раскладке
 (use-package reverse-im
-  :ensure t
+  :ensure
   :custom
   (reverse-im-input-methods '("russian-computer"))
   :config
@@ -282,20 +282,20 @@
 ;; Пакет для автоматического использования su/sudo для редактирования файлов
 ;; в случае если файл не может быть отредактирован текущим пользователем
 (use-package su
-  :ensure t
+  :ensure
   :config
   (su-mode +1))
 
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
-  :ensure t
+  :ensure
   :config
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-buffer-name-string "vterm %s"))
 
 ;; Дополнение vterm-toggle для быстрого доступа к терминалу в любом буфере
 (use-package vterm-toggle
-  :ensure t
+  :ensure
   :after (vterm)
   :bind (("s-z" . vterm-toggle)
          ("s-Z" . vterm-toggle-cd)
@@ -318,5 +318,5 @@
 
 ;; Зум отдельного окна на весь фрейм, как C-b z в tmux
 (use-package zygospore
-  :ensure t
+  :ensure
   :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
