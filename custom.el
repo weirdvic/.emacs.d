@@ -11,4 +11,4 @@
  '(default ((t (:family "Go Mono" :foundry "    " :slant normal :weight normal :height 110 :width normal))))
  '(fill-column-indicator ((t (:foreground "gray80" :weight normal))))
  '(multi-magit-repo-heading ((t (:inherit magit-section-heading :box nil))))
- '(speedbar-selected-face ((t (:foreground "#008B45" :underline t)))))
+ '(speedbar-selected-face ((t (:foreground "#008B45" :underline t))))))
