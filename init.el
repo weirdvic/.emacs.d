@@ -294,20 +294,6 @@
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-buffer-name-string "%s vterm"))
 
-;; Дополнение vterm-toggle для быстрого доступа к терминалу в любом буфере
-(use-package vterm-toggle
-  :ensure
-  :after (vterm)
-  :bind (("s-z" . vterm-toggle)
-         ("s-Z" . vterm-toggle-cd)
-         ("s->" . vterm-toggle-forward)
-         ("s-<" . vterm-toggle-backward))
-  :config
-  (setq vterm-toggle-fullscreen-p nil)
-  (add-to-list 'display-buffer-alist
-               '((lambda(bufname _) (with-current-buffer bufname (equal major-mode 'vterm-mode)))
-                 (display-buffer-reuse-window display-buffer-same-window))))
-
 ;; Подсказывать справку по доступным сочетаниям при нажатии
 ;; C-h во время ввода сочетания
 (use-package which-key
