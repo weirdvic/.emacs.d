@@ -87,8 +87,7 @@
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
-(global-set-key (kbd "C-q") 'undo)
-(global-set-key (kbd "C-z") 'quoted-insert)
+(global-set-key (kbd "C-z") 'advertised-undo)
 ;; Переключить комментарии выделенного фрагмента по C-c C-k
 (define-key prog-mode-map (kbd "C-c C-k") 'comment-or-uncomment-region)
 ;; Прокрутка по одной линии за раз
@@ -293,9 +292,11 @@
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
   :ensure
+  :bind
+  ("s-x" . vterm)
   :config
   (setq vterm-kill-buffer-on-exit t)
-  (setq vterm-buffer-name-string "vterm %s"))
+  (setq vterm-buffer-name-string "%s vterm"))
 
 ;; Дополнение vterm-toggle для быстрого доступа к терминалу в любом буфере
 (use-package vterm-toggle
@@ -316,7 +317,7 @@
 (use-package which-key
   :config
   (setq which-key-show-early-on-C-h t)
-  (setq which-key-idle-delay 10000)
+  (setq which-key-idle-delay 3)
   (setq which-key-idle-secondary-delay 0.05)
   (which-key-mode))
 
