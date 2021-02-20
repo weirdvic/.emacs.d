@@ -87,7 +87,7 @@
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
-(global-set-key (kbd "C-z") 'advertised-undo)
+(global-set-key (kbd "C-z") 'undo)
 ;; Переключить комментарии выделенного фрагмента по C-c C-k
 (define-key prog-mode-map (kbd "C-c C-k") 'comment-or-uncomment-region)
 ;; Прокрутка по одной линии за раз
@@ -98,10 +98,6 @@
 ;; #                Настройки пакетов с применением use-package                #
 ;; #                                                                           #
 ;; #############################################################################
-
-;; The Silver Searcher -- ag, утилита для рекурсивного поиска в директориях
-(use-package ag
-  :ensure)
 
 ;; Настройки для работы с Ansible
 (use-package ansible
