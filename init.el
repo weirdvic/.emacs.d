@@ -115,6 +115,30 @@
   :config
   (defalias 'list-buffers 'ibuffer))
 
+;; Настройки клиента IRC
+(use-package circe
+  :ensure
+  :after (epg)
+  :config
+  ;; Выравнивание никнеймов
+  (setq circe-format-say "{nick:-16s} {body}")
+  ;; Отображать собственный никнейм
+  (setq circe-format-self-say "<{nick}> {body}")
+;; Показывать название канала в prompt
+(add-hook 'circe-chat-mode-hook 'my-circe-prompt)
+(defun my-circe-prompt ()
+  (lui-set-prompt
+   (concat (propertize (concat (buffer-name) ">")
+                       'face 'circe-prompt-face)
+           " ")))
+;; Показывать время сообщений справа
+(setq
+ lui-time-stamp-position 'right-margin
+ lui-time-stamp-format "%H:%M")
+(add-hook 'lui-mode-hook 'my-circe-set-margin)
+(defun my-circe-set-margin ()
+  (setq right-margin-width 5)))
+
 ;; Настройки Company
 (use-package company
   :ensure
@@ -242,33 +266,6 @@
 (use-package rainbow-delimiters
   :ensure
   :hook (prog-mode . rainbow-delimiters-mode))
-
-;; Настройки для IRC
-(use-package rcirc
-  :after (epg)
-  :init
-  ;; Аутентификация на сервере перед подключением к каналам
-  (setq rcirc-authenticate-before-join t)
-  ;; Подсветка никнеймов
-  (setq rcirc-bright-nicks (quote ("wvc")))
-  ;; Стандартный никнейм
-  (setq rcirc-default-nick "wvc")
-  (setq rcirc-prompt "%n@%t: ")
-  ;; Список серверов и каналов
-  (setq rcirc-server-alist
-	(quote
-	 (("irc.freenode.net" :channels
-	   ("#em.slashem.me" "#hardfought" "#nethack")))))
-  ;; Уведомления в модлайне
-  (add-hook 'rcirc-mode-hook
-	    (lambda ()
-	      (rcirc-track-minor-mode 1)))
-  ;; Хук для того чтобы буфер с IRC автоматически скроллился
-  ;; и строка отправки сообщения оставалась внизу экрана
-  (add-hook 'rcirc-mode-hook
-	    (lambda ()
-	      (set (make-local-variable 'scroll-conservatively)
-		   8192))))
 
 ;; Пакет для работы клавиш емакса в русской раскладке
 (use-package reverse-im
