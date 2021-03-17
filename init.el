@@ -33,7 +33,7 @@
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (setq-default frame-title-format '("" "%b @ Emacs " emacs-version))
+  (setq-default frame-title-format '("Emacs " emacs-version))
   ;; PDF-tools для чтения pdf в Emacs
   (use-package pdf-tools
     :ensure
@@ -42,7 +42,6 @@
 
 ;; Использование desktop.el для сохранения состояния фрейма и окон
 (desktop-save-mode 1)
-
 ;; Использовать 4 пробела вместо табуляции
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
@@ -68,10 +67,8 @@
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 ;; Отображать номера строк в буферах с исходниками
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-;; При вводе парного элемента (скобки, кавычки), автоматически добавлять
-;; закрывающий элемент и ставить курсор между элементами
+(show-paren-mode t)
 (electric-pair-mode t)
-(show-paren-mode 1)
 ;; Дни недели и месяцы на русском языке
 (setq calendar-week-start-day 1
       calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
@@ -243,6 +240,16 @@
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc
   :ensure)
+
+;; PlantUML для рисования диаграмм
+;; По пути ~/.emacs.d/plantuml.jar должен лежать jar файл PlantUML
+(use-package plantuml-mode
+  :ensure
+  :config
+  (setq org-plantuml-jar-path (expand-file-name "~/.emacs.d/plantuml.jar"))
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+  )
 
 ;; Настройки Projectile
 (use-package projectile
