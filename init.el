@@ -104,6 +104,16 @@
 (use-package ansible-vault
   :ensure)
 
+;; Blockdiag для рисования диаграмм
+(use-package blockdiag-mode
+  :ensure)
+
+(use-package ob-blockdiag
+  :ensure
+  :config
+  (org-babel-do-load-languages 'org-babel-load-languages
+                               '((blockdiag . t))))
+
 ;; Управление буферами и список буферов по C-x C-b
 (use-package bs
   :ensure)
@@ -240,16 +250,6 @@
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc
   :ensure)
-
-;; PlantUML для рисования диаграмм
-;; По пути ~/.emacs.d/plantuml.jar должен лежать jar файл PlantUML
-(use-package plantuml-mode
-  :ensure
-  :config
-  (setq org-plantuml-jar-path (expand-file-name "~/.emacs.d/plantuml.jar"))
-  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
-  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
-  )
 
 ;; Настройки Projectile
 (use-package projectile
