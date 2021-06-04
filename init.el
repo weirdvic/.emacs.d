@@ -153,7 +153,8 @@
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 1)
   (add-to-list 'company-backends 'company-ansible)
-  (add-hook 'after-init-hook 'global-company-mode))
+  (add-hook 'after-init-hook 'global-company-mode)
+  (global-set-key (kbd "C-<tab>") 'company-complete))
 (use-package company-ansible
   :ensure)
 
@@ -190,6 +191,10 @@
   :config
   (eyebrowse-mode t))
 
+;; Flycheck
+(use-package flycheck
+  :ensure)
+
 ;; Базовый пакет для поддержки Go
 (use-package go-mode
   :after (lsp-mode)
@@ -219,14 +224,33 @@
   :ensure
   :hook (
          (go-mode . lsp)
+         (php-mode . lsp)
          (python-mode . lsp)
          ;; Интеграция с which-key
          (lsp-mode . lsp-enable-which-key-integration))
+  :config
+  (setq lsp-prefer-flymake nil
+         lsp-eldoc-hook nil)
   :commands lsp)
 
 ;; Дополнительно
 (use-package lsp-ui
+  :requires lsp-mode flycheck
   :ensure
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-doc-use-childframe nil
+        lsp-ui-doc-position 'top
+        lsp-ui-doc-include-signature t
+        lsp-ui-sideline-enable nil
+        lsp-ui-flycheck-enable t
+        lsp-ui-flycheck-list-position 'right
+        lsp-ui-flycheck-live-reporting t
+        lsp-ui-peek-enable t
+        lsp-ui-peek-list-width 60
+        lsp-ui-peek-peek-height 25
+        lsp-ui-sideline-enable nil)
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
   :commands lsp-ui-mode)
 
 ;; Настройки Magit
@@ -235,21 +259,45 @@
   :config
   (global-set-key (kbd "C-x g") 'magit-status))
 
+;; Цветовые схемы
+(use-package nord-theme
+  :ensure
+  :init
+  (load-theme 'nord t)
+  ;; (custom-set-faces
+  ;;  '(term-color-black ((t (:foreground "#232627" :background "#31363b"))))
+  ;;  '(term-color-blue ((t (:foreground "#3daee9" :background "#1b668f"))))
+  ;;  '(term-color-cyan ((t (:foreground "#16a085" :background "#186c60"))))
+  ;;  '(term-color-green ((t (:foreground "#11d116" :background "#17a262"))))
+  ;;  '(term-color-magenta ((t (:foreground "#8e44ad" :background "#614a73"))))
+  ;;  '(term-color-red ((t (:foreground "#c0392b" :background "#783228"))))
+  ;;  '(term-color-white ((t (:foreground "#EEEEEC" :background "#D3D7CF"))))
+  ;;  '(term-color-yellow ((t (:foreground "#fdbc4b" :background "#b65619"))))
+  ;;  '(term-default-bg-color ((t (:inherit term-color-white))))
+  ;;  '(term-default-fg-color ((t (:inherit term-color-black)))))
+  )
+
 ;; Улучшенный модлайн
 (use-package mood-line
   :ensure
   :config
   (mood-line-mode))
 
-;; Цветовые схемы
-(use-package nord-theme
-  :ensure
-  :config
-  (load-theme 'nord t))
-
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc
   :ensure)
+
+;; Настройки для php-mode
+(use-package php-mode
+ :ensure t
+ :mode
+ ("\\.php\\'" . php-mode))
+
+(add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
+
+(use-package phpunit
+  :ensure t)
+(provide 'lang-php)
 
 ;; Настройки Projectile
 (use-package projectile
