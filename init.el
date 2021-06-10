@@ -191,10 +191,6 @@
   :config
   (eyebrowse-mode t))
 
-;; Flycheck
-(use-package flycheck
-  :ensure)
-
 ;; Базовый пакет для поддержки Go
 (use-package go-mode
   :after (lsp-mode)
@@ -235,7 +231,7 @@
 
 ;; Дополнительно
 (use-package lsp-ui
-  :requires lsp-mode flycheck
+  :requires lsp-mode
   :ensure
   :config
   (setq lsp-ui-doc-enable t
@@ -243,14 +239,8 @@
         lsp-ui-doc-position 'top
         lsp-ui-doc-include-signature t
         lsp-ui-sideline-enable nil
-        lsp-ui-flycheck-enable t
-        lsp-ui-flycheck-list-position 'right
-        lsp-ui-flycheck-live-reporting t
-        lsp-ui-peek-enable t
-        lsp-ui-peek-list-width 60
-        lsp-ui-peek-peek-height 25
-        lsp-ui-sideline-enable nil)
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+        lsp-ui-flycheck-enable nil
+        lsp-ui-peek-enable nil)
   :commands lsp-ui-mode)
 
 ;; Настройки Magit
@@ -263,19 +253,7 @@
 (use-package nord-theme
   :ensure
   :init
-  (load-theme 'nord t)
-  ;; (custom-set-faces
-  ;;  '(term-color-black ((t (:foreground "#232627" :background "#31363b"))))
-  ;;  '(term-color-blue ((t (:foreground "#3daee9" :background "#1b668f"))))
-  ;;  '(term-color-cyan ((t (:foreground "#16a085" :background "#186c60"))))
-  ;;  '(term-color-green ((t (:foreground "#11d116" :background "#17a262"))))
-  ;;  '(term-color-magenta ((t (:foreground "#8e44ad" :background "#614a73"))))
-  ;;  '(term-color-red ((t (:foreground "#c0392b" :background "#783228"))))
-  ;;  '(term-color-white ((t (:foreground "#EEEEEC" :background "#D3D7CF"))))
-  ;;  '(term-color-yellow ((t (:foreground "#fdbc4b" :background "#b65619"))))
-  ;;  '(term-default-bg-color ((t (:inherit term-color-white))))
-  ;;  '(term-default-fg-color ((t (:inherit term-color-black)))))
-  )
+  (load-theme 'nord t))
 
 ;; Улучшенный модлайн
 (use-package mood-line
