@@ -168,6 +168,16 @@
 (use-package dockerfile-mode
   :ensure)
 
+;; Цветовые схемы
+(use-package doom-themes
+  :ensure t
+  :config
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (load-theme 'doom-nord t)
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
+
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
 ;; открытом виде в init.el
@@ -248,12 +258,6 @@
   :ensure
   :config
   (global-set-key (kbd "C-x g") 'magit-status))
-
-;; Цветовые схемы
-(use-package nord-theme
-  :ensure
-  :init
-  (load-theme 'nord t))
 
 ;; Улучшенный модлайн
 (use-package mood-line
