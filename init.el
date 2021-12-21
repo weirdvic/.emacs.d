@@ -111,8 +111,12 @@
 (use-package ob-blockdiag
   :ensure
   :config
-  (org-babel-do-load-languages 'org-babel-load-languages
-                               '((blockdiag . t))))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(
+     (sql . t)
+     (blockdiag . t))
+   ))
 
 ;; Управление буферами и список буферов по C-x C-b
 (use-package bs
