@@ -104,20 +104,6 @@
 (use-package ansible-vault
   :ensure)
 
-;; Blockdiag для рисования диаграмм
-(use-package blockdiag-mode
-  :ensure)
-
-(use-package ob-blockdiag
-  :ensure
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '(
-     (sql . t)
-     (blockdiag . t))
-   ))
-
 ;; Управление буферами и список буферов по C-x C-b
 (use-package bs
   :ensure)
@@ -269,6 +255,11 @@
   :config
   (mood-line-mode))
 
+;; Выполнение sql блоков в org файлах
+(use-package ob-sql-mode
+  :ensure
+  )
+
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc
   :ensure)
@@ -280,10 +271,6 @@
  ("\\.php\\'" . php-mode))
 
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
-
-(use-package phpunit
-  :ensure t)
-(provide 'lang-php)
 
 ;; Настройки Projectile
 (use-package projectile
