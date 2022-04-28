@@ -79,6 +79,10 @@
 (setq display-time-24hr-format t)
 ;; Позволяет переключаться между окнами с зажатым Shift
 (windmove-default-keybindings)
+(add-hook 'org-shiftup-final-hook 'windmove-up)
+(add-hook 'org-shiftleft-final-hook 'windmove-left)
+(add-hook 'org-shiftdown-final-hook 'windmove-down)
+(add-hook 'org-shiftright-final-hook 'windmove-right)
 ;; Дополнительные клавиши для управления размерами окон
 (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
@@ -271,24 +275,6 @@
  ("\\.php\\'" . php-mode))
 
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
-
-;; Настройки Projectile
-(use-package projectile
-  :ensure
-  :config
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  )
-
-;; Racket mode для работы с Scheme
-(use-package racket-mode
-  :ensure
-  :mode "\\.scm\\'"
-  :config
-  ;; Запуск кода по нажатию F5
-  (add-hook 'racket-mode-hook
-	    (lambda ()
-	      (define-key racket-mode-map (kbd "<f5>") 'racket-run))))
 
 ;; Подсветка скобок
 (use-package rainbow-delimiters
