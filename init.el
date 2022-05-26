@@ -33,12 +33,7 @@
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (setq-default frame-title-format '("Emacs " emacs-version))
-  ;; PDF-tools для чтения pdf в Emacs
-  (use-package pdf-tools
-    :ensure
-    :config
-    (pdf-tools-install)))
+  (setq-default frame-title-format '("Emacs " emacs-version)))
 
 ;; Использование desktop.el для сохранения состояния фрейма и окон
 (desktop-save-mode 1)
@@ -79,10 +74,6 @@
 (setq display-time-24hr-format t)
 ;; Позволяет переключаться между окнами с зажатым Shift
 (windmove-default-keybindings)
-(add-hook 'org-shiftup-final-hook 'windmove-up)
-(add-hook 'org-shiftleft-final-hook 'windmove-left)
-(add-hook 'org-shiftdown-final-hook 'windmove-down)
-(add-hook 'org-shiftright-final-hook 'windmove-right)
 ;; Дополнительные клавиши для управления размерами окон
 (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
@@ -93,6 +84,14 @@
 (define-key prog-mode-map (kbd "C-c C-k") 'comment-or-uncomment-region)
 ;; Прокрутка по одной линии за раз
 (setq scroll-step 1)
+;; Настройки org-mode
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (python . t)
+   (shell . t)
+   (sql . t)
+   ))
 
 ;; #############################################################################
 ;; #                                                                           #
@@ -259,11 +258,6 @@
   :config
   (mood-line-mode))
 
-;; Выполнение sql блоков в org файлах
-(use-package ob-sql-mode
-  :ensure
-  )
-
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc
   :ensure)
@@ -275,6 +269,11 @@
  ("\\.php\\'" . php-mode))
 
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
+
+;; Поддержка виртуальных окружений Python
+(use-package pyvenv
+  :ensure
+  )
 
 ;; Подсветка скобок
 (use-package rainbow-delimiters
