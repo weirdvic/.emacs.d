@@ -100,24 +100,18 @@
 ;; #############################################################################
 
 ;; Настройки для работы с Ansible
-(use-package ansible
-  :ensure)
-(use-package ansible-doc
-  :ensure)
-(use-package ansible-vault
-  :ensure)
+(use-package ansible)
+(use-package ansible-doc)
+(use-package ansible-vault)
 
 ;; Управление буферами и список буферов по C-x C-b
-(use-package bs
-  :ensure)
+(use-package bs)
 (use-package ibuffer
-  :ensure
   :config
   (defalias 'list-buffers 'ibuffer))
 
 ;; Настройки клиента IRC
 (use-package circe
-  :ensure
   :after (epg)
   :config
   ;; Выравнивание никнеймов
@@ -141,29 +135,23 @@
 
 ;; Настройки Company
 (use-package company
-  :ensure
   :config
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 1)
   (add-to-list 'company-backends 'company-ansible)
   (add-hook 'after-init-hook 'global-company-mode)
   (global-set-key (kbd "C-<tab>") 'company-complete))
-(use-package company-ansible
-  :ensure)
+(use-package company-ansible)
 
 ;; Улучшенная работа с crontab файлами
-(use-package crontab-mode
-  :ensure)
+(use-package crontab-mode)
 
 ;; Настройки для работы с Docker
-(use-package docker-compose-mode
-  :ensure)
-(use-package dockerfile-mode
-  :ensure)
+(use-package docker-compose-mode)
+(use-package dockerfile-mode)
 
 ;; Цветовые схемы
 (use-package doom-themes
-  :ensure t
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
@@ -183,21 +171,18 @@
 
 ;; Получать значение $PATH из шелла
 (use-package exec-path-from-shell
-  :ensure
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
 ;; Eyebrowse для работы с раскладками окон
 (use-package eyebrowse
-  :ensure
   :config
   (eyebrowse-mode t))
 
 ;; Базовый пакет для поддержки Go
 (use-package go-mode
   :after (lsp-mode)
-  :ensure
   ;; Перед сохранением файла форматировать код и сортировать импорты
   :hook ((go-mode . lsp-deferred)
          (before-save . lsp-format-buffer)
@@ -205,13 +190,15 @@
 
 ;; IDO плагин
 (use-package ido
-  :ensure
   :config
   (ido-mode t)
   (ido-everywhere t)
   (icomplete-mode t)
   (setq ido-virtual-buffers t)
   (setq ido-enable-flex-matching t))
+
+;; Kubernetes mode
+(use-package k8s-mode)
 
 ;; Настройки lsp-mode для python и go
 ;; https://emacs-lsp.github.io/lsp-mode/page/installation/
@@ -220,7 +207,6 @@
 (setq lsp-keymap-prefix "C-c l")
 
 (use-package lsp-mode
-  :ensure
   :hook (
          (go-mode . lsp)
          (php-mode . lsp)
@@ -235,7 +221,6 @@
 ;; Дополнительно
 (use-package lsp-ui
   :requires lsp-mode
-  :ensure
   :config
   (setq lsp-ui-doc-enable t
         lsp-ui-doc-use-childframe nil
@@ -248,41 +233,33 @@
 
 ;; Настройки Magit
 (use-package magit
-  :ensure
   :config
   (global-set-key (kbd "C-x g") 'magit-status))
 
 ;; Улучшенный модлайн
 (use-package mood-line
-  :ensure
   :config
   (mood-line-mode))
 
 ;; Пакет для экспорта из .org в другие форматы
-(use-package ox-pandoc
-  :ensure)
+(use-package ox-pandoc)
 
 ;; Настройки для php-mode
 (use-package php-mode
- :ensure t
  :mode
  ("\\.php\\'" . php-mode))
 
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
 
 ;; Поддержка виртуальных окружений Python
-(use-package pyvenv
-  :ensure
-  )
+(use-package pyvenv)
 
 ;; Подсветка скобок
 (use-package rainbow-delimiters
-  :ensure
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; Пакет для работы клавиш емакса в русской раскладке
 (use-package reverse-im
-  :ensure
   :custom
   (reverse-im-input-methods '("russian-computer"))
   :config
@@ -291,13 +268,11 @@
 ;; Пакет для автоматического использования su/sudo для редактирования файлов
 ;; в случае если файл не может быть отредактирован текущим пользователем
 (use-package su
-  :ensure
   :config
   (su-mode +1))
 
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
-  :ensure
   :bind
   ("s-x" . vterm)
   :config
@@ -315,5 +290,4 @@
 
 ;; Зум отдельного окна на весь фрейм, как C-b z в tmux
 (use-package zygospore
-  :ensure
   :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
