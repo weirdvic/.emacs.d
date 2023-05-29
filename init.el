@@ -1,3 +1,6 @@
+;; -*- coding: utf-8; lexical-binding: t -*-
+;; Увеличение порога срабатывания сборщика мусора
+(setq gc-cons-threshold (* 50 1000 1000))
 ;; Подключение репозиториев пакетов
 (require 'package)
 (setq package-archives
@@ -26,7 +29,7 @@
 
 ;; Отключение элементов интерфейса
 (setq inhibit-splash-screen   t)
-(setq inhibit-startup-message t)
+(setq inhibit-startup-screen t)
 
 ;; Отдельные настройки для GUI версии
 (when (window-system)
@@ -37,88 +40,95 @@
 
 ;; Использование desktop.el для сохранения состояния фрейма и окон
 (desktop-save-mode 1)
+
 ;; Использовать 4 пробела вместо табуляции
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
+
 ;; Перед сохранением файла удалять пробелы в конце строк
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
 ;; Вводимый текст перезаписывает выделенный
 (delete-selection-mode t)
+
  ;; Добавить новую пустую строку в конец файла при сохранении
 (setq require-final-newline t)
+
  ;; Не добавлять новую строку в конец при смещении
 (setq next-line-add-newlines nil)
+
 ;; Выделять цветом результаты поиска и замены
 (setq search-highlight t)
 (setq query-replace-highlight t)
+
 ;; Отключаем файлы бэкапов и автосохранения
 (setq make-backup-files        nil)
 (setq auto-save-default        nil)
 (setq auto-save-list-file-name nil)
+(setq create-lockfiles         nil)
+
 ;; Пустые строки выделить глифами
 (setq-default indicate-empty-lines t)
-;; Переносить по словам
+
+;; Переносить текст по словам, подсвечивать скобки
 (setq word-wrap t)
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 (show-paren-mode t)
 (electric-pair-mode t)
-;; Настройки Dired
+
+;; Прокрутка по одной линии за раз
+(setq scroll-step 1)
+
+;; Предпочитать новые файлы
+(setq load-prefer-newer t)
+
+;; Юникодные многоточия…
+(setq truncate-string-ellipsis "…")
+
+;; Всегда предпочитать Юникод другим кодировкам
+(set-charset-priority 'unicode)
+(prefer-coding-system 'utf-8-unix)
+
+;; Отображение времени в 24 часовом формате вместо AM/PM
+(setq display-time-24hr-format t)
+
+;; При нажатии `a' на строке в dired-mode, открывать в том же буфере
 (put 'dired-find-alternate-file 'disabled nil)
-(defvar my/dired-preview-temp-buffer nil)
 
-;;;###autoload
-(defun my/dired-preview ()
-  "Preview a file/directory at point in Dired.
-It's similar to `dired-display-file' but it checks if a buffer
-visiting a file is live.  If not, it will be put into a temp file
-to be removed."
-  (when my/dired-preview-temp-buffer (kill-buffer my/dired-preview-temp-buffer))
-  (setq my/dired-preview-temp-buffer nil)
-  (let* ((file (dired-get-file-for-visit))
-         (buf (find-buffer-visiting file)))
-    (unless buf
-      (setq buf (find-file-noselect file))
-      (setq my/dired-preview-temp-buffer buf))
-    ;; Check if a buffer visiting file is live; if not it's a temp buffer to be
-    ;; deleted.
-    (display-buffer buf t)))
+;; Настройки ido и icomplete
+(require 'ido)
+(ido-mode 1)
+(setf (nth 2 ido-decorations) "\n")
+(setq
+ ido-default-file-method 'selected-window
+ ido-default-buffer-method 'selected-window
+ ido-use-virtual-buffers t
+ ido-enable-flex-matching 1
+ ido-everywhere t
+ max-mini-window-height 0.5
+ )
+(fido-vertical-mode 1)
 
-;;;###autoload
-(defun my/dired-next-line-display ()
-  (interactive)(dired-next-line 1)(my/dired-preview))
-
-;;;###autoload
-(defun my/dired-previous-line-display ()
-  (interactive)(dired-previous-line 1)(my/dired-preview))
-
-(add-hook 'dired-mode-hook
-          (lambda ()
-            (dired-hide-details-mode 1)
-            ;; I don't use dired-subtree at the moment
-            ;;(define-key dired-mode-map (kbd "<tab>") #'dired-subtree-toggle)
-            ;;(define-key dired-mode-map (kbd "<C-tab>") #'dired-subtree-cycle)
-            (define-key dired-mode-map (kbd "<down>") #'my/dired-next-line-display)
-            (define-key dired-mode-map (kbd "<up>") #'my/dired-previous-line-display)))
 ;; Дни недели и месяцы на русском языке
 (setq calendar-week-start-day 1
       calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
       calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май"
                                  "Июнь" "Июль" "Август" "Сентябрь"
                                  "Октябрь" "Ноябрь" "Декабрь"])
-;; Отображение времени в 24 часовом формате вместо AM/PM
-(setq display-time-24hr-format t)
+
 ;; Позволяет переключаться между окнами с зажатым Shift
 (windmove-default-keybindings)
+
 ;; Дополнительные клавиши для управления размерами окон
 (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
 (global-set-key (kbd "C-z") 'undo)
+
 ;; Переключить комментарии выделенного фрагмента по C-c C-k
 (define-key prog-mode-map (kbd "C-c C-k") 'comment-or-uncomment-region)
-;; Прокрутка по одной линии за раз
-(setq scroll-step 1)
+
 ;; Настройки org-mode
 (setq org-babel-load-languages
   '((emacs-lisp . t)
@@ -127,10 +137,12 @@ to be removed."
     (sql . t)))
 (setq org-todo-keywords
   '((sequence "TODO" "WORK" "DONE")))
-(setq org-edit-src-content-indentation 0
-  org-adapt-indentation nil
-  org-src-tab-acts-natively t
-  yaml-indent-offset 4)
+(setq
+ org-edit-src-content-indentation 0
+ org-adapt-indentation nil
+ org-src-tab-acts-natively t
+ yaml-indent-offset 4
+ org-return-follows-link t)
 
 ;; #############################################################################
 ;; #                                                                           #
@@ -138,15 +150,17 @@ to be removed."
 ;; #                                                                           #
 ;; #############################################################################
 
-;; Управление буферами и список буферов по C-x C-b
+;; Поиск при помощи ag
+(use-package ag)
 
+;; Управление буферами и список буферов по C-x C-b
 (use-package ibuffer
   :config
   (defalias 'list-buffers 'ibuffer))
 
 ;; Настройки клиента IRC
 (use-package circe
-  :after (epg)
+  :after epg
   :config
   ;; Выравнивание никнеймов
   (setq circe-format-say "{nick:-16s} {body}")
@@ -174,9 +188,69 @@ to be removed."
   (setq company-minimum-prefix-length 1)
   (add-hook 'after-init-hook 'global-company-mode)
   (global-set-key (kbd "C-<tab>") 'company-complete))
+(use-package company-posframe
+  :after company
+  :config (company-posframe-mode 1))
 
 ;; Улучшенная работа с crontab файлами
 (use-package crontab-mode)
+
+;; Улучшенный dired-mode
+(use-package all-the-icons
+  :if (display-graphic-p))
+(use-package all-the-icons-dired)
+
+(use-package dirvish
+  :after (all-the-icons pdf-tools)
+  :init
+  (dirvish-override-dired-mode)
+  (require 'dired-x)
+  (setq dired-omit-files
+      (concat dired-omit-files "\\|^\\..+$"))
+  (setq dired-omit-mode t)
+  (setq dirvish-fd-program "fdfind")
+  (setq dirvish-default-layout '(0 0.4 0.6))
+  :custom
+  (dirvish-quick-access-entries ; It's a custom option, `setq' won't work
+   '(("h" "~/"               "Home")
+     ("d" "~/Загрузки/" "Downloads")
+     ("e" "~/.emacs.d/"     "Emacs")
+     ("r" "~/org-roam/" "OrgRoam")
+     ("s" "~/croesus/" "Fort Ludios")))
+  :config
+  ;; (dirvish-peek-mode) ; Preview files in minibuffer
+  ;; (dirvish-side-follow-mode) ; similar to `treemacs-follow-mode'
+  (setq dirvish-mode-line-format
+        '(:left (sort symlink) :right (omit yank index)))
+  (setq dirvish-attributes
+        '(all-the-icons file-time file-size collapse subtree-state vc-state git-msg))
+  ;; (setq delete-by-moving-to-trash t)
+  (setq dired-listing-switches
+        "-la --human-readable --group-directories-first --no-group")
+  (setq dirvish-open-with-programs
+  (when-let ((vlc (executable-find "vlc")))
+    `((,dirvish-audio-exts . (,vlc "%f"))
+      (,dirvish-video-exts . (,vlc "%f")))))
+  :bind ; Bind `dirvish|dirvish-side|dirvish-dwim' as you see fit
+  (("C-c f" . dirvish-fd)
+   :map dirvish-mode-map ; Dirvish inherits `dired-mode-map'
+   ("a"   . dirvish-quick-access)
+   ("f"   . dirvish-file-info-menu)
+   ("y"   . dirvish-yank-menu)
+   ("N"   . dirvish-narrow)
+   ;;("^"   . dirvish-history-last)
+   ("h"   . dirvish-history-jump) ; remapped `describe-mode'
+   ("s"   . dirvish-quicksort)    ; remapped `dired-sort-toggle-or-edit'
+   ("v"   . dirvish-vc-menu)      ; remapped `dired-view-file'
+   ("TAB" . dirvish-subtree-toggle)
+   ("M-f" . dirvish-history-go-forward)
+   ("M-b" . dirvish-history-go-backward)
+   ("M-l" . dirvish-ls-switches-menu)
+   ("M-m" . dirvish-mark-menu)
+   ("M-t" . dirvish-layout-toggle)
+   ("M-s" . dirvish-setup-menu)
+   ("M-e" . dirvish-emerge-menu)
+   ("M-j" . dirvish-fd-jump)))
 
 ;; Настройки для работы с Docker
 (use-package docker-compose-mode)
@@ -187,7 +261,7 @@ to be removed."
   :config
   (load-theme 'solo-jazz t))
 (use-package solaire-mode
-  :after (solo-jazz-theme)
+  :after solo-jazz-theme
   :config (solaire-global-mode +1))
 
 ;; Включаем прозрачное шифрование файлов при помощи GPG
@@ -213,20 +287,11 @@ to be removed."
 
 ;; Базовый пакет для поддержки Go
 (use-package go-mode
-  :after (lsp-mode)
+  :after lsp-mode
   ;; Перед сохранением файла форматировать код и сортировать импорты
   :hook ((go-mode . lsp-deferred)
          (before-save . lsp-format-buffer)
          (before-save . lsp-organize-imports)))
-
-;; IDO плагин
-(use-package ido
-  :config
-  (ido-mode t)
-  (ido-everywhere t)
-  (icomplete-mode t)
-  (setq ido-virtual-buffers t)
-  (setq ido-enable-flex-matching t))
 
 ;; Настройки интеграции с Kubernetes
 (use-package kele
@@ -284,6 +349,8 @@ to be removed."
          ("C-c n f" . org-roam-node-find)
          ("C-c n t" . org-roam-tag-add)
          ("C-c n i" . org-roam-node-insert)
+         ("C-c n p" . (lambda () (interactive)
+                        (my/org-roam-to-hugo "posts" (my/org-roam-posts))))
          :map org-mode-map
          ("C-M-i" . completion-at-point)
          :map org-roam-dailies-map
@@ -291,25 +358,99 @@ to be removed."
          ("T" . org-roam-dailies-capture-tomorrow))
   :bind-keymap
   ("C-c n d" . org-roam-dailies-map)
+  :functions
+  (my/org-roam-posts
+   my/org-roam-to-hugo
+   my/org-insert-date-keyword
+   my/org-export-before-parsing)
   :config
-  (require 'org-roam-dailies) ;; Ensure the keymap is available
-  (org-roam-db-autosync-mode)
-  (setq org-roam-node-display-template
-      (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag))))
+  (defun my/org-roam-posts ()
+    "Выбирает ноды org-roam, содержащие определённое слово в параметре KIND"
+    (cl-remove-if-not
+     (lambda (node)
+       (string= "post" (cdr (assoc-string "KIND" (org-roam-node-properties node)))))
+     (org-roam-node-list)))
 
-(use-package consult-ag)
+  (defun my/org-roam-to-hugo (section files)
+    "Главная функция для экспорта org файлов в Hugo"
+    (mapcar
+     (lambda (node)
+       (with-current-buffer (find-file-noselect (org-roam-node-file node))
+         (let ((org-hugo-section section))
+           (org-hugo-export-to-md))))
+     files))
+
+  (defun my/org-insert-date-keyword ()
+    "Добавить в заметку ключевое слово date"
+    (org-roam-set-keyword "date" (format-time-string "[%Y-%m-%d %a]" (current-time))))
+
+  (defun my/org-export-before-parsing (backend)
+    "Установить параметры перед экспортом в Markdown"
+    (when (string= backend "hugo")
+      (org-roam-set-keyword
+       "hugo_lastmod"
+       (format-time-string "%Y-%m-%d" (file-attribute-modification-time (file-attributes (buffer-file-name)))))))
+
+  (defun my/org-link-advice (fn link desc &rest rest)
+    (if (string= "id" (org-element-property :type link))
+        (my/org-link-by-id fn link desc rest)
+      (apply fn link desc rest)))
+
+  (defun my/org-link-by-id (fn link desc rest)
+    (let ((node (org-roam-node-from-id (org-element-property :path link)))
+          (protocols '("http://" "https://" "ftp://")))
+      (if (not (string= "post" (cdr (assoc-string "KIND" (org-roam-node-properties node)))))
+          ;; Если ссылка не на пост, вставляем ссылку из ROAM_REFS заметки, либо только текст
+          (if-let ((url (seq-find (lambda (arg) (cl-some (lambda (p) (string-prefix-p p arg)) protocols))
+                                  (split-string-and-unquote (or (cdr (assoc-string "ROAM_REFS" (org-roam-node-properties node))) "")))))
+              (format "[%s](%s)" desc url)
+            desc)
+        ;; Если ссылка на другой пост, ставим ссылку на него
+        (apply fn link desc rest))))
+
+  (advice-add #'org-hugo-link :around #'my/org-link-advice)
+
+  (setq org-roam-capture-templates
+        '(("d" "default" plain "%?"
+           :immediate-finish t
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                              "#+title: ${title}\n")
+           :unnarrowed t)
+          ("p" "post" plain "%?"
+           :if-new (file+head "${slug}.org"
+":PROPERTIES:
+:KIND: post
+:END:
+#+title: ${title}
+#+hugo_tags:
+#+hugo_categories:
+#+hugo_lastmod: Time-stamp: <>\n\n\n")
+           :immediate-finish t
+           :unnarrowed t)))
+  (setq org-roam-node-display-template
+        (concat "${title} " (propertize "${tags}" 'face 'org-tag)))
+  (org-roam-setup)
+  (org-roam-db-autosync-mode)
+  (add-hook 'before-save-hook 'time-stamp)
+  (add-hook 'org-roam-capture-new-node-hook #'my/org-insert-date-keyword))
+
+(use-package org-roam-ui
+  :after org-roam
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
 
 (use-package consult-org-roam
    :after org-roam
    :init
-   (require
-    'consult-org-roam
-    'consult-ag)
+   (require 'consult-org-roam)
    ;; Activate the minor mode
    (consult-org-roam-mode 1)
    :custom
-   ;; Use `ag' for searching with `consult-org-roam-search'
-   (consult-org-roam-grep-func #'consult-ag)
+   ;; Use `ripgrep' for searching with `consult-org-roam-search'
+   (consult-org-roam-grep-func #'consult-ripgrep)
    ;; Configure a custom narrow key for `consult-buffer'
    (consult-org-roam-buffer-narrow-key ?r)
    ;; Display org-roam buffers right after non-org-roam buffers
@@ -324,11 +465,20 @@ to be removed."
    ;; Define some convenient keybindings as an addition
    ("C-c n e" . consult-org-roam-file-find)
    ("C-c n b" . consult-org-roam-backlinks)
-   ("C-c n l" . consult-org-roam-forward-links)
    ("C-c n r" . consult-org-roam-search))
 
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc)
+
+;; Экспорт из .org в Hugo SSG
+(use-package ox-hugo
+  :pin melpa  ;`package-archives' should already have ("melpa" . "https://melpa.org/packages/")
+  :after ox
+  :config
+  (setq org-export-with-author nil))
+
+;; pdf-tools для чтения PDF файлов
+(use-package pdf-tools)
 
 ;; Настройки для php-mode
 (use-package php-mode
@@ -366,16 +516,11 @@ to be removed."
   :config
   (su-mode +1))
 
-;; Пакеты treemacs для отображения файлового дерева
-(use-package treemacs
-  :bind ("<f9>" . treemacs)
-  :config (treemacs-follow-mode 1))
-(use-package treemacs-all-the-icons
-  :after (treemacs))
-(use-package treemacs-magit
-  :after (treemacs magit))
-(use-package treemacs-projectile
-  :after (treemacs projectile))
+;; Пакеты для работы с Terraform
+(use-package terraform-doc)
+(use-package terraform-mode
+  :config
+  (setq terraform-format-on-save t))
 
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
