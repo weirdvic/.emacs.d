@@ -95,20 +95,6 @@
 ;; При нажатии `a' на строке в dired-mode, открывать в том же буфере
 (put 'dired-find-alternate-file 'disabled nil)
 
-;; Настройки ido и icomplete
-(require 'ido)
-(ido-mode 1)
-(setf (nth 2 ido-decorations) "\n")
-(setq
- ido-default-file-method 'selected-window
- ido-default-buffer-method 'selected-window
- ido-use-virtual-buffers t
- ido-enable-flex-matching 1
- ido-everywhere t
- max-mini-window-height 0.5
- )
-(fido-vertical-mode 1)
-
 ;; Дни недели и месяцы на русском языке
 (setq calendar-week-start-day 1
       calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
@@ -264,6 +250,33 @@
   :after solo-jazz-theme
   :config (solaire-global-mode +1))
 
+;; Немного глобальных настроек
+(use-package emacs
+  :init
+  ;; Добавление индикатора к `completing-read-multiple'.
+  ;; Выглядит как [CRM<разделитель>], например, [CRM,] если разделитель запятая.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Убрать курсор из запроса минибуффера
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; Emacs 28: скрыть команды в M-x которые недоступны в текущем режиме.
+  ;; Команды Vertico скрыты в обычных буферах
+  (setq read-extended-command-predicate
+        #'command-completion-default-include-p)
+
+  ;; Разрешить вложенные минибуфферы
+  (setq enable-recursive-minibuffers t))
+
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
 ;; открытом виде в init.el
@@ -351,6 +364,9 @@
          ("C-c n i" . org-roam-node-insert)
          ("C-c n p" . (lambda () (interactive)
                         (my/org-roam-to-hugo "posts" (my/org-roam-posts))))
+         ("C-c n e" . consult-org-roam-file-find)
+         ("C-c n b" . consult-org-roam-backlinks)
+         ("C-c n r" . consult-org-roam-search)
          :map org-mode-map
          ("C-M-i" . completion-at-point)
          :map org-roam-dailies-map
@@ -443,29 +459,22 @@
         org-roam-ui-open-on-start t))
 
 (use-package consult-org-roam
-   :after org-roam
-   :init
-   (require 'consult-org-roam)
-   ;; Activate the minor mode
-   (consult-org-roam-mode 1)
-   :custom
-   ;; Use `ripgrep' for searching with `consult-org-roam-search'
-   (consult-org-roam-grep-func #'consult-ripgrep)
-   ;; Configure a custom narrow key for `consult-buffer'
-   (consult-org-roam-buffer-narrow-key ?r)
-   ;; Display org-roam buffers right after non-org-roam buffers
-   ;; in consult-buffer (and not down at the bottom)
-   (consult-org-roam-buffer-after-buffers t)
-   :config
-   ;; Eventually suppress previewing for certain functions
-   (consult-customize
-    consult-org-roam-forward-links
-    :preview-key (kbd "M-."))
-   :bind
-   ;; Define some convenient keybindings as an addition
-   ("C-c n e" . consult-org-roam-file-find)
-   ("C-c n b" . consult-org-roam-backlinks)
-   ("C-c n r" . consult-org-roam-search))
+  :after org-roam
+  :demand t
+  :init
+  (require 'consult-org-roam)
+  (consult-org-roam-mode 1)
+  :custom
+  ;; Использовать `ripgrep' для поиска с `consult-org-roam-search'
+  (consult-org-roam-grep-func #'consult-ripgrep)
+  ;; Кнопка для сужения диапазона поиска в `consult-buffer'
+  (consult-org-roam-buffer-narrow-key ?r)
+  (consult-org-roam-buffer-after-buffers t)
+  :config
+  ;; Не показывать превью для ссылок org-roam
+  (consult-customize
+   consult-org-roam-forward-links
+   :preview-key (kbd "M-.")))
 
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc)
@@ -510,6 +519,11 @@
   :config
   (reverse-im-mode t))
 
+;; Сохранение истории автодополнения команд между перезапусками Emacs
+(use-package savehist
+  :init
+  (savehist-mode))
+
 ;; Пакет для автоматического использования su/sudo для редактирования файлов
 ;; в случае если файл не может быть отредактирован текущим пользователем
 (use-package su
@@ -521,6 +535,13 @@
 (use-package terraform-mode
   :config
   (setq terraform-format-on-save t))
+
+;; Пакет vertico для вертикального автодополнения
+(use-package vertico
+  :init
+  (vertico-mode)
+  (setq vertico-count 20)
+  (setq vertico-cycle t))
 
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
