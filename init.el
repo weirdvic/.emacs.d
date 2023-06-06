@@ -127,7 +127,7 @@
  org-edit-src-content-indentation 0
  org-adapt-indentation nil
  org-src-tab-acts-natively t
- yaml-indent-offset 4
+ yaml-indent-offset 2
  org-return-follows-link t)
 
 ;; #############################################################################
@@ -197,15 +197,15 @@
   (setq dirvish-fd-program "fdfind")
   (setq dirvish-default-layout '(0 0.4 0.6))
   :custom
-  (dirvish-quick-access-entries ; It's a custom option, `setq' won't work
+  (dirvish-quick-access-entries ; Настройка быстрого доступа
    '(("h" "~/"               "Home")
      ("d" "~/Загрузки/" "Downloads")
      ("e" "~/.emacs.d/"     "Emacs")
      ("r" "~/org-roam/" "OrgRoam")
      ("s" "~/croesus/" "Fort Ludios")))
   :config
-  ;; (dirvish-peek-mode) ; Preview files in minibuffer
-  ;; (dirvish-side-follow-mode) ; similar to `treemacs-follow-mode'
+  ;; (dirvish-peek-mode) ; Предпросмотр файлов в минибуффере
+  (dirvish-side-follow-mode)
   (setq dirvish-mode-line-format
         '(:left (sort symlink) :right (omit yank index)))
   (setq dirvish-attributes
@@ -219,15 +219,16 @@
       (,dirvish-video-exts . (,vlc "%f")))))
   :bind ; Bind `dirvish|dirvish-side|dirvish-dwim' as you see fit
   (("C-c f" . dirvish-fd)
-   :map dirvish-mode-map ; Dirvish inherits `dired-mode-map'
+   ("<f9>"  . dirvish-side)
+   :map dirvish-mode-map ; Dirvish наследует `dired-mode-map'
    ("a"   . dirvish-quick-access)
    ("f"   . dirvish-file-info-menu)
    ("y"   . dirvish-yank-menu)
    ("N"   . dirvish-narrow)
    ;;("^"   . dirvish-history-last)
-   ("h"   . dirvish-history-jump) ; remapped `describe-mode'
-   ("s"   . dirvish-quicksort)    ; remapped `dired-sort-toggle-or-edit'
-   ("v"   . dirvish-vc-menu)      ; remapped `dired-view-file'
+   ("h"   . dirvish-history-jump) ; переназначено с `describe-mode'
+   ("s"   . dirvish-quicksort)    ; переназначено с `dired-sort-toggle-or-edit'
+   ("v"   . dirvish-vc-menu)      ; переназначено с `dired-view-file'
    ("TAB" . dirvish-subtree-toggle)
    ("M-f" . dirvish-history-go-forward)
    ("M-b" . dirvish-history-go-backward)
@@ -325,7 +326,7 @@
          (lsp-mode . lsp-enable-which-key-integration))
   :config
   (setq lsp-prefer-flymake nil
-        lsp-eldoc-hook nil)
+        eldoc-documentation-function nil)
   :commands lsp)
 
 ;; Дополнительно
@@ -337,7 +338,6 @@
         lsp-ui-doc-position 'top
         lsp-ui-doc-include-signature t
         lsp-ui-sideline-enable nil
-        lsp-ui-flycheck-enable nil
         lsp-ui-peek-enable nil)
   :commands lsp-ui-mode)
 
@@ -445,11 +445,11 @@
            :unnarrowed t)))
   (setq org-roam-node-display-template
         (concat "${title} " (propertize "${tags}" 'face 'org-tag)))
-  (org-roam-setup)
   (org-roam-db-autosync-mode)
   (add-hook 'before-save-hook 'time-stamp)
   (add-hook 'org-roam-capture-new-node-hook #'my/org-insert-date-keyword))
 
+;; Графический интерфейс для org-roam
 (use-package org-roam-ui
   :after org-roam
   :config
@@ -458,6 +458,7 @@
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 
+;; Поиск по заметкам в org-roam
 (use-package consult-org-roam
   :after org-roam
   :demand t
@@ -476,12 +477,23 @@
    consult-org-roam-forward-links
    :preview-key (kbd "M-.")))
 
+;; Включение `orderless' режима автодополнения.
+;; Нужно для гибкого поиска через vertico: например при поиске ноды в org-roam
+(use-package orderless
+  :init
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))
+        read-file-name-completion-ignore-case t
+        read-buffer-completion-ignore-case t
+        completion-ignore-case t))
+
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc)
 
 ;; Экспорт из .org в Hugo SSG
 (use-package ox-hugo
-  :pin melpa  ;`package-archives' should already have ("melpa" . "https://melpa.org/packages/")
+  :pin melpa
   :after ox
   :config
   (setq org-export-with-author nil))
@@ -542,6 +554,16 @@
   (vertico-mode)
   (setq vertico-count 20)
   (setq vertico-cycle t))
+
+;; Вертикальное автодополнение для имён файлов
+(use-package vertico-directory
+  :after vertico
+  :ensure nil
+  :bind (:map vertico-map
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word))
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
