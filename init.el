@@ -1,120 +1,4 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
-;; Увеличение порога срабатывания сборщика мусора
-(setq gc-cons-threshold (* 50 1000 1000))
-;; Подключение репозиториев пакетов
-(require 'package)
-(setq package-archives
-      '(("gnu" . "https://elpa.gnu.org/packages/")
-        ("melpa" . "https://melpa.org/packages/")))
-(package-initialize)
-
-;; Если пакет use-package не установлен, его нужно скачать и установить
-(unless (package-installed-p 'use-package)
-  (message "Emacs will install use-package.el")
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
-(setq use-package-always-ensure t)
-
-;; Перенести переменные, создаваемые Custom в отдельный файл
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (file-exists-p custom-file)
-  (load custom-file))
-
-;; #############################################################################
-;; #                                                                           #
-;; #                     Настройки интерфейса и переменных                     #
-;; #                                                                           #
-;; #############################################################################
-
-;; Отключение элементов интерфейса
-(setq inhibit-splash-screen   t)
-(setq inhibit-startup-screen t)
-
-;; Отдельные настройки для GUI версии
-(when (window-system)
-  ;;(menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-  (setq-default frame-title-format '("Emacs " emacs-version)))
-
-;; Использование desktop.el для сохранения состояния фрейма и окон
-(desktop-save-mode 1)
-
-;; Использовать 4 пробела вместо табуляции
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-
-;; Перед сохранением файла удалять пробелы в конце строк
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-;; Вводимый текст перезаписывает выделенный
-(delete-selection-mode t)
-
- ;; Добавить новую пустую строку в конец файла при сохранении
-(setq require-final-newline t)
-
- ;; Не добавлять новую строку в конец при смещении
-(setq next-line-add-newlines nil)
-
-;; Выделять цветом результаты поиска и замены
-(setq search-highlight t)
-(setq query-replace-highlight t)
-
-;; Отключаем файлы бэкапов и автосохранения
-(setq make-backup-files        nil)
-(setq auto-save-default        nil)
-(setq auto-save-list-file-name nil)
-(setq create-lockfiles         nil)
-
-;; Пустые строки выделить глифами
-(setq-default indicate-empty-lines t)
-
-;; Переносить текст по словам, подсвечивать скобки
-(setq word-wrap t)
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-(show-paren-mode t)
-(electric-pair-mode t)
-
-;; Прокрутка по одной линии за раз
-(setq scroll-step 1)
-
-;; Предпочитать новые файлы
-(setq load-prefer-newer t)
-
-;; Юникодные многоточия…
-(setq truncate-string-ellipsis "…")
-
-;; Всегда предпочитать Юникод другим кодировкам
-(set-charset-priority 'unicode)
-(prefer-coding-system 'utf-8-unix)
-
-;; Отображение времени в 24 часовом формате вместо AM/PM
-(setq display-time-24hr-format t)
-
-;; При нажатии `a' на строке в dired-mode, открывать в том же буфере
-(put 'dired-find-alternate-file 'disabled nil)
-
-;; Дни недели и месяцы на русском языке
-(setq calendar-week-start-day 1
-      calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
-      calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май"
-                                 "Июнь" "Июль" "Август" "Сентябрь"
-                                 "Октябрь" "Ноябрь" "Декабрь"])
-
-;; Позволяет переключаться между окнами с зажатым Shift
-(windmove-default-keybindings)
-
-;; Дополнительные клавиши для управления размерами окон
-(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
-(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "S-C-<down>") 'shrink-window)
-(global-set-key (kbd "S-C-<up>") 'enlarge-window)
-(global-set-key (kbd "C-z") 'undo)
-
-;; Переключить комментарии выделенного фрагмента по C-c C-k
-(define-key prog-mode-map (kbd "C-c C-k") 'comment-or-uncomment-region)
-
 ;; #############################################################################
 ;; #                                                                           #
 ;; #                Настройки пакетов с применением use-package                #
@@ -137,20 +21,20 @@
   (setq circe-format-say "{nick:-16s} {body}")
   ;; Отображать собственный никнейм
   (setq circe-format-self-say "<{nick}> {body}")
-;; Показывать название канала в prompt
-(add-hook 'circe-chat-mode-hook 'my-circe-prompt)
-(defun my-circe-prompt ()
-  (lui-set-prompt
-   (concat (propertize (concat (buffer-name) ">")
-                       'face 'circe-prompt-face)
-           " ")))
-;; Показывать время сообщений справа
-(setq
- lui-time-stamp-position 'right-margin
- lui-time-stamp-format "%H:%M")
-(add-hook 'lui-mode-hook 'my-circe-set-margin)
-(defun my-circe-set-margin ()
-  (setq right-margin-width 5)))
+  ;; Показывать название канала в prompt
+  (add-hook 'circe-chat-mode-hook 'my-circe-prompt)
+  (defun my-circe-prompt ()
+    (lui-set-prompt
+     (concat (propertize (concat (buffer-name) ">")
+                         'face 'circe-prompt-face)
+             " ")))
+  ;; Показывать время сообщений справа
+  (setq
+   lui-time-stamp-position 'right-margin
+   lui-time-stamp-format "%H:%M")
+  (add-hook 'lui-mode-hook 'my-circe-set-margin)
+  (defun my-circe-set-margin ()
+    (setq right-margin-width 5)))
 
 ;; Настройки company-mode
 (use-package company
@@ -177,7 +61,7 @@
   (dirvish-override-dired-mode)
   (require 'dired-x)
   (setq dired-omit-files
-      (concat dired-omit-files "\\|^\\..+$"))
+        (concat dired-omit-files "\\|^\\..+$"))
   (setq dired-omit-mode t)
   (setq dirvish-fd-program "fdfind")
   (setq dirvish-default-layout '(0 0.4 0.6))
@@ -199,9 +83,9 @@
   (setq dired-listing-switches
         "-la --human-readable --group-directories-first --no-group")
   (setq dirvish-open-with-programs
-  (when-let ((vlc (executable-find "vlc")))
-    `((,dirvish-audio-exts . (,vlc "%f"))
-      (,dirvish-video-exts . (,vlc "%f")))))
+        (when-let ((vlc (executable-find "vlc")))
+          `((,dirvish-audio-exts . (,vlc "%f"))
+            (,dirvish-video-exts . (,vlc "%f")))))
   :bind ; Bind `dirvish|dirvish-side|dirvish-dwim' as you see fit
   (("C-c f" . dirvish-fd)
    ("<f9>"  . dirvish-side)
@@ -239,6 +123,117 @@
 ;; Немного глобальных настроек
 (use-package emacs
   :init
+  ;; Увеличение порога срабатывания сборщика мусора
+  (setq gc-cons-threshold (* 50 1000 1000))
+  ;; Подключение репозиториев пакетов
+  (require 'package)
+  (setq package-archives
+        '(("gnu" . "https://elpa.gnu.org/packages/")
+          ("melpa" . "https://melpa.org/packages/")))
+  (package-initialize)
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+
+  ;; Перенести переменные, создаваемые Custom в отдельный файл
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+    (load custom-file))
+
+  ;; #############################################################################
+  ;; #                                                                           #
+  ;; #                     Настройки интерфейса и переменных                     #
+  ;; #                                                                           #
+  ;; #############################################################################
+
+  ;; Отключение элементов интерфейса
+  (setq inhibit-splash-screen   t)
+  (setq inhibit-startup-screen t)
+
+  ;; Отдельные настройки для GUI версии
+  (when (window-system)
+    ;;(menu-bar-mode -1)
+    (tool-bar-mode -1)
+    (scroll-bar-mode -1)
+    (setq-default frame-title-format '("Emacs " emacs-version)))
+
+  ;; Использование desktop.el для сохранения состояния фрейма и окон
+  (desktop-save-mode 1)
+
+  ;; Использовать 4 пробела вместо табуляции
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 4)
+
+  ;; Перед сохранением файла удалять пробелы в конце строк
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+  ;; Вводимый текст перезаписывает выделенный
+  (delete-selection-mode t)
+
+  ;; Добавить новую пустую строку в конец файла при сохранении
+  (setq require-final-newline t)
+
+  ;; Не добавлять новую строку в конец при смещении
+  (setq next-line-add-newlines nil)
+
+  ;; Выделять цветом результаты поиска и замены
+  (setq search-highlight t)
+  (setq query-replace-highlight t)
+
+  ;; Отключаем файлы бэкапов и автосохранения
+  (setq make-backup-files        nil)
+  (setq auto-save-default        nil)
+  (setq auto-save-list-file-name nil)
+  (setq create-lockfiles         nil)
+
+  ;; Пустые строки выделить глифами
+  (setq-default indicate-empty-lines t)
+
+  ;; Переносить текст по словам, подсвечивать скобки
+  (setq word-wrap t)
+  (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+  (show-paren-mode t)
+  (electric-pair-mode t)
+
+  ;; Прокрутка по одной линии за раз
+  (setq scroll-step 1)
+
+  ;; Предпочитать новые файлы
+  (setq load-prefer-newer t)
+
+  ;; Юникодные многоточия…
+  (setq truncate-string-ellipsis "…")
+
+  ;; Всегда предпочитать Юникод другим кодировкам
+  (set-charset-priority 'unicode)
+  (prefer-coding-system 'utf-8-unix)
+
+  ;; Отображение времени в 24 часовом формате вместо AM/PM
+  (setq display-time-24hr-format t)
+
+  ;; При нажатии `a' на строке в dired-mode, открывать в том же буфере
+  (put 'dired-find-alternate-file 'disabled nil)
+
+  ;; Дни недели и месяцы на русском языке
+  (setq calendar-week-start-day 1
+        calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
+        calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май"
+                                   "Июнь" "Июль" "Август" "Сентябрь"
+                                   "Октябрь" "Ноябрь" "Декабрь"])
+
+  ;; Позволяет переключаться между окнами с зажатым Shift
+  (windmove-default-keybindings)
+
+  ;; Дополнительные клавиши для управления размерами окон
+  (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+  (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+  (global-set-key (kbd "S-C-<down>") 'shrink-window)
+  (global-set-key (kbd "S-C-<up>") 'enlarge-window)
+  (global-set-key (kbd "C-z") 'undo)
+
+  ;; Переключить комментарии выделенного фрагмента по C-c C-k
+  (define-key prog-mode-map (kbd "C-c C-k") 'comment-or-uncomment-region)
+
   ;; Добавление индикатора к `completing-read-multiple'.
   ;; Выглядит как [CRM<разделитель>], например, [CRM,] если разделитель запятая.
   (defun crm-indicator (args)
@@ -249,6 +244,11 @@
                   (car args))
           (cdr args)))
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  (defun delete-current-file ()
+    (interactive)
+    (delete-file (buffer-file-name))
+    (kill-current-buffer))
 
   ;; Убрать курсор из запроса минибуффера
   (setq minibuffer-prompt-properties
@@ -262,6 +262,7 @@
 
   ;; Разрешить вложенные минибуфферы
   (setq enable-recursive-minibuffers t)
+  ;; Разделять окно только по вертикали
   (setq split-width-threshold 0))
 
 ;; Включаем прозрачное шифрование файлов при помощи GPG
@@ -272,7 +273,7 @@
   (epa-file-enable)
   (setq secrets-file (expand-file-name "secrets.el.gpg" user-emacs-directory))
   (when (file-exists-p secrets-file)
-  (load secrets-file)))
+    (load secrets-file)))
 
 ;; Получать значение $PATH из шелла
 (use-package exec-path-from-shell
@@ -312,11 +313,11 @@
   :config
   ;; Настройки org-mode
   (org-babel-do-load-languages
- 'org-babel-load-languages
-        '((emacs-lisp . t)
-          (python . t)
-          (shell . t)
-          (sql . t)))
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)
+     (shell . t)
+     (sql . t)))
   (setq
    org-todo-keywords '((sequence "TODO" "WORK" "DONE"))
    org-edit-src-content-indentation 0
@@ -397,13 +398,13 @@
       (let ((kind (cdr (assoc-string "KIND" (org-roam-node-properties node)))))
         (if (not (or (string= kind "post")
                      (string= kind "mycelium")))
-          ;; Если ссылка не на пост, вставляем ссылку из ROAM_REFS заметки, либо только текст
-          (if-let ((url (seq-find (lambda (arg) (cl-some (lambda (p) (string-prefix-p p arg)) protocols))
-                                  (split-string-and-unquote (or (cdr (assoc-string "ROAM_REFS" (org-roam-node-properties node))) "")))))
-              (format "[%s](%s)" desc url)
-            desc)
-        ;; Если ссылка на другой пост, ставим ссылку на него
-        (apply fn link desc rest)))))
+            ;; Если ссылка не на пост, вставляем ссылку из ROAM_REFS заметки, либо только текст
+            (if-let ((url (seq-find (lambda (arg) (cl-some (lambda (p) (string-prefix-p p arg)) protocols))
+                                    (split-string-and-unquote (or (cdr (assoc-string "ROAM_REFS" (org-roam-node-properties node))) "")))))
+                (format "[%s](%s)" desc url)
+              desc)
+          ;; Если ссылка на другой пост, ставим ссылку на него
+          (apply fn link desc rest)))))
 
   (advice-add #'org-hugo-link :around #'my/org-link-advice)
 
@@ -415,7 +416,7 @@
            :unnarrowed t)
           ("p" "post" plain "%?"
            :if-new (file+head "${slug}.org"
-":PROPERTIES:
+                              ":PROPERTIES:
 :KIND: post
 :END:
 #+title: ${title}
@@ -484,8 +485,8 @@
 
 ;; Настройки для php-mode
 (use-package php-mode
- :mode
- ("\\.php\\'" . php-mode))
+  :mode
+  ("\\.php\\'" . php-mode))
 
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
 
