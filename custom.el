@@ -6,7 +6,7 @@
  '(ispell-dictionary nil)
  '(native-comp-async-report-warnings-errors nil)
  '(package-selected-packages
-   '(vertico zygospore which-key vterm use-package terraform-mode terraform-doc su solo-jazz-theme solaire-mode reverse-im rainbow-delimiters pyvenv-auto projectile php-mode pdf-tools ox-pandoc ox-hugo org-roam-ui mood-line magit lsp-ui kubedoc kele go-mode eyebrowse exec-path-from-shell dockerfile-mode docker-compose-mode dirvish crontab-mode consult-org-roam company-posframe circe all-the-icons-dired ag))
+   '(orderless vertico zygospore which-key vterm use-package terraform-mode terraform-doc su solo-jazz-theme solaire-mode reverse-im rainbow-delimiters pyvenv-auto projectile php-mode pdf-tools ox-pandoc ox-hugo org-roam-ui mood-line magit kubedoc kele go-mode eyebrowse exec-path-from-shell dockerfile-mode docker-compose-mode dirvish crontab-mode consult-org-roam company-posframe circe all-the-icons-dired ag))
  '(safe-local-variable-values
    '((eval setq-local org-export-before-parsing-functions
            (append org-export-before-parsing-functions
@@ -17,7 +17,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Fira Code" :foundry "CTDB" :slant normal :weight semi-bold :height 108 :width normal))))
+ '(default ((t (:family "Fira Code" :foundry "CTDB" :slant normal :weight semi-bold :height 115 :width normal))))
  '(ansi-color-black ((t (:background "#555753" :foreground "#2e3436"))))
  '(ansi-color-blue ((t (:background "#66aadd" :foreground "#2266cc"))))
  '(ansi-color-cyan ((t (:background "#00dddd" :foreground "#008888"))))

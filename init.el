@@ -115,21 +115,6 @@
 ;; Переключить комментарии выделенного фрагмента по C-c C-k
 (define-key prog-mode-map (kbd "C-c C-k") 'comment-or-uncomment-region)
 
-;; Настройки org-mode
-(setq org-babel-load-languages
-  '((emacs-lisp . t)
-    (python . t)
-    (shell . t)
-    (sql . t)))
-(setq org-todo-keywords
-  '((sequence "TODO" "WORK" "DONE")))
-(setq
- org-edit-src-content-indentation 0
- org-adapt-indentation nil
- org-src-tab-acts-natively t
- yaml-indent-offset 2
- org-return-follows-link t)
-
 ;; #############################################################################
 ;; #                                                                           #
 ;; #                Настройки пакетов с применением use-package                #
@@ -174,9 +159,9 @@
   (setq company-minimum-prefix-length 1)
   (add-hook 'after-init-hook 'global-company-mode)
   (global-set-key (kbd "C-<tab>") 'company-complete))
-(use-package company-posframe
+(use-package company-box
   :after company
-  :config (company-posframe-mode 1))
+  :config (company-box-mode 1))
 
 ;; Улучшенная работа с crontab файлами
 (use-package crontab-mode)
@@ -276,7 +261,8 @@
         #'command-completion-default-include-p)
 
   ;; Разрешить вложенные минибуфферы
-  (setq enable-recursive-minibuffers t))
+  (setq enable-recursive-minibuffers t)
+  (setq split-width-threshold 0))
 
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
@@ -301,11 +287,8 @@
 
 ;; Базовый пакет для поддержки Go
 (use-package go-mode
-  :after lsp-mode
   ;; Перед сохранением файла форматировать код и сортировать импорты
-  :hook ((go-mode . lsp-deferred)
-         (before-save . lsp-format-buffer)
-         (before-save . lsp-organize-imports)))
+  :hook ((go-mode . eglot-ensure)))
 
 ;; Настройки интеграции с Kubernetes
 (use-package kele
@@ -313,33 +296,6 @@
   (kele-mode 1)
   (bind-key (kbd "s-k") kele-command-map kele-mode-map))
 (use-package kubedoc)
-
-;; Префикс для lsp-command-keymap
-(setq lsp-keymap-prefix "C-c l")
-
-(use-package lsp-mode
-  :hook (
-         (go-mode . lsp)
-         (php-mode . lsp)
-         (python-mode . lsp)
-         ;; Интеграция с which-key
-         (lsp-mode . lsp-enable-which-key-integration))
-  :config
-  (setq lsp-prefer-flymake nil
-        eldoc-documentation-function nil)
-  :commands lsp)
-
-;; Дополнительно
-(use-package lsp-ui
-  :requires lsp-mode
-  :config
-  (setq lsp-ui-doc-enable t
-        lsp-ui-doc-use-childframe nil
-        lsp-ui-doc-position 'top
-        lsp-ui-doc-include-signature t
-        lsp-ui-sideline-enable nil
-        lsp-ui-peek-enable nil)
-  :commands lsp-ui-mode)
 
 ;; Настройки Magit
 (use-package magit
@@ -350,6 +306,24 @@
 (use-package mood-line
   :config
   (mood-line-mode))
+
+;; Общие настройки org-mode
+(use-package org
+  :config
+  ;; Настройки org-mode
+  (org-babel-do-load-languages
+ 'org-babel-load-languages
+        '((emacs-lisp . t)
+          (python . t)
+          (shell . t)
+          (sql . t)))
+  (setq
+   org-todo-keywords '((sequence "TODO" "WORK" "DONE"))
+   org-edit-src-content-indentation 0
+   org-adapt-indentation nil
+   org-src-tab-acts-natively t
+   yaml-indent-offset 2
+   org-return-follows-link t))
 
 ;; Настройки org-roam
 (use-package org-roam
@@ -363,7 +337,8 @@
          ("C-c n t" . org-roam-tag-add)
          ("C-c n i" . org-roam-node-insert)
          ("C-c n p" . (lambda () (interactive)
-                        (my/org-roam-to-hugo "posts" (my/org-roam-posts))))
+                        (my/org-roam-to-hugo "posts" (my/org-roam-select "post"))
+                        (my/org-roam-to-hugo "mycelium" (my/org-roam-select "mycelium"))))
          ("C-c n e" . consult-org-roam-file-find)
          ("C-c n b" . consult-org-roam-backlinks)
          ("C-c n r" . consult-org-roam-search)
@@ -375,26 +350,30 @@
   :bind-keymap
   ("C-c n d" . org-roam-dailies-map)
   :functions
-  (my/org-roam-posts
+  (my/org-roam-select
    my/org-roam-to-hugo
    my/org-insert-date-keyword
    my/org-export-before-parsing)
   :config
-  (defun my/org-roam-posts ()
+  (defun my/org-roam-select (kind)
     "Выбирает ноды org-roam, содержащие определённое слово в параметре KIND"
     (cl-remove-if-not
      (lambda (node)
-       (string= "post" (cdr (assoc-string "KIND" (org-roam-node-properties node)))))
+       (string= kind (cdr (assoc-string "KIND" (org-roam-node-properties node)))))
      (org-roam-node-list)))
 
-  (defun my/org-roam-to-hugo (section files)
+  (defun my/org-roam-to-hugo (section nodes)
     "Главная функция для экспорта org файлов в Hugo"
-    (mapcar
-     (lambda (node)
-       (with-current-buffer (find-file-noselect (org-roam-node-file node))
-         (let ((org-hugo-section section))
-           (org-hugo-export-to-md))))
-     files))
+    (org-roam-db-sync)
+    (let ((before-buffers (buffer-list)))
+      (let* ((file-list (mapcar (lambda (node) (org-roam-node-file node)) nodes))
+             (unique-files (delete-dups file-list)))
+        (dolist (file unique-files)
+          (with-current-buffer (find-file-noselect file)
+            (let ((org-hugo-section section))
+              (org-hugo-export-wim-to-md))
+            (unless (member (current-buffer) before-buffers)
+              (kill-buffer (current-buffer))))))))
 
   (defun my/org-insert-date-keyword ()
     "Добавить в заметку ключевое слово date"
@@ -415,14 +394,16 @@
   (defun my/org-link-by-id (fn link desc rest)
     (let ((node (org-roam-node-from-id (org-element-property :path link)))
           (protocols '("http://" "https://" "ftp://")))
-      (if (not (string= "post" (cdr (assoc-string "KIND" (org-roam-node-properties node)))))
+      (let ((kind (cdr (assoc-string "KIND" (org-roam-node-properties node)))))
+        (if (not (or (string= kind "post")
+                     (string= kind "mycelium")))
           ;; Если ссылка не на пост, вставляем ссылку из ROAM_REFS заметки, либо только текст
           (if-let ((url (seq-find (lambda (arg) (cl-some (lambda (p) (string-prefix-p p arg)) protocols))
                                   (split-string-and-unquote (or (cdr (assoc-string "ROAM_REFS" (org-roam-node-properties node))) "")))))
               (format "[%s](%s)" desc url)
             desc)
         ;; Если ссылка на другой пост, ставим ссылку на него
-        (apply fn link desc rest))))
+        (apply fn link desc rest)))))
 
   (advice-add #'org-hugo-link :around #'my/org-link-advice)
 
