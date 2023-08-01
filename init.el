@@ -360,6 +360,7 @@
   :functions
   (my/org-roam-select
    my/org-roam-to-hugo
+   my/org-roam-update-graph
    my/org-insert-date-keyword
    my/org-export-before-parsing)
   :config
@@ -382,6 +383,15 @@
               (org-hugo-export-wim-to-md))
             (unless (member (current-buffer) before-buffers)
               (kill-buffer (current-buffer))))))))
+
+  (defun my/org-roam-update-graph ()
+    "Функция для обновления графа связей заметок org-roam"
+    (interactive)
+    (let* ((venv-bin (expand-file-name "~/.emacs.d/venv/bin/python3"))
+           (roam2graph-script (expand-file-name "~/.emacs.d/roam2graph.py"))
+           (output-file (expand-file-name "~/weirdvic.github.io/static/graph.json")))
+      (shell-command (format "%s %s > %s 2>/dev/null" venv-bin roam2graph-script output-file))
+      (message "Graph data generated and saved to '%s'" output-file)))
 
   (defun my/org-insert-date-keyword ()
     "Добавить в заметку ключевое слово date"
