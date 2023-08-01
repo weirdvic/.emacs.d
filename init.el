@@ -44,8 +44,7 @@
   (add-hook 'after-init-hook 'global-company-mode)
   (global-set-key (kbd "C-<tab>") 'company-complete))
 (use-package company-box
-  :after company
-  :config (company-box-mode 1))
+  :hook (company-mode . company-box-mode))
 
 ;; Улучшенная работа с crontab файлами
 (use-package crontab-mode)
@@ -122,7 +121,11 @@
 
 ;; Немного глобальных настроек
 (use-package emacs
-  :init
+  :functions
+  (crm-indicator
+   delete-current-file
+   split-window-prefer-vertically)
+  :config
   ;; Увеличение порога срабатывания сборщика мусора
   (setq gc-cons-threshold (* 50 1000 1000))
   ;; Подключение репозиториев пакетов
@@ -139,12 +142,6 @@
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   (when (file-exists-p custom-file)
     (load custom-file))
-
-  ;; #############################################################################
-  ;; #                                                                           #
-  ;; #                     Настройки интерфейса и переменных                     #
-  ;; #                                                                           #
-  ;; #############################################################################
 
   ;; Отключение элементов интерфейса
   (setq inhibit-splash-screen   t)
@@ -246,9 +243,19 @@
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
   (defun delete-current-file ()
+    "Удалить текущий файл и закрыть буфер."
     (interactive)
     (delete-file (buffer-file-name))
     (kill-current-buffer))
+
+  (defun split-window-prefer-vertically (window)
+    "Если открыто лишь одно окно, исключая минибуффер,
+    в таком случае разделить окно горизонтально."
+    (if (and (one-window-p t)
+             (not (active-minibuffer-window)))
+        (let ((split-width-threshold 0))
+          (split-window-sensibly window))
+      (split-window-sensibly window)))
 
   ;; Убрать курсор из запроса минибуффера
   (setq minibuffer-prompt-properties
@@ -263,7 +270,8 @@
   ;; Разрешить вложенные минибуфферы
   (setq enable-recursive-minibuffers t)
   ;; Разделять окно только по вертикали
-  (setq split-width-threshold 0))
+  (setq split-window-preferred-function 'split-window-prefer-vertically)
+  )
 
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
@@ -294,7 +302,6 @@
 ;; Настройки интеграции с Kubernetes
 (use-package kele
   :config
-  (kele-mode 1)
   (bind-key (kbd "s-k") kele-command-map kele-mode-map))
 (use-package kubedoc)
 
@@ -414,6 +421,17 @@
            :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
                               "#+title: ${title}\n")
            :unnarrowed t)
+          ("m" "mycelium" plain "%?"
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                              ":PROPERTIES:
+:KIND: mycelium
+:END:
+#+title: ${title}
+#+hugo_tags:
+#+hugo_categories:
+#+hugo_lastmod: Time-stamp: <>\n\n\n")
+           :immediate-finish t
+           :unnarrowed t)
           ("p" "post" plain "%?"
            :if-new (file+head "${slug}.org"
                               ":PROPERTIES:
@@ -465,7 +483,7 @@
   :init
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))
+        completion-category-overrides '((file (styles partial-pcompletion)))
         read-file-name-completion-ignore-case t
         read-buffer-completion-ignore-case t
         completion-ignore-case t))
@@ -530,12 +548,18 @@
   :config
   (setq terraform-format-on-save t))
 
+(use-package transient-posframe
+  :config
+  (transient-posframe-mode))
+
 ;; Пакет vertico для вертикального автодополнения
 (use-package vertico
   :init
   (vertico-mode)
-  (setq vertico-count 20)
-  (setq vertico-cycle t))
+  (setq vertico-count 15
+        vertico-cycle t
+        vertico-scroll-margin 0
+        vertico-resize t))
 
 ;; Вертикальное автодополнение для имён файлов
 (use-package vertico-directory
@@ -546,6 +570,10 @@
               ("DEL" . vertico-directory-delete-char)
               ("M-DEL" . vertico-directory-delete-word))
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
+(use-package vertico-posframe
+  :after vertico
+  :config
+  (vertico-posframe-mode 1))
 
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
@@ -562,6 +590,10 @@
   (setq which-key-idle-delay 3)
   (setq which-key-idle-secondary-delay 0.05)
   (which-key-mode))
+(use-package which-key-posframe
+  :after which-key
+  :config
+  (which-key-posframe-mode 1))
 
 ;; Зум отдельного окна на весь фрейм, как C-b z в tmux
 (use-package zygospore
