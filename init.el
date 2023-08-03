@@ -8,6 +8,32 @@
    delete-current-file
    split-window-prefer-vertically)
   :config
+  ;; Добавление индикатора к `completing-read-multiple'.
+  ;; Выглядит как [CRM<разделитель>], например, [CRM,] если разделитель запятая.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  (defun delete-current-file ()
+    "Удалить текущий файл и закрыть буфер."
+    (interactive)
+    (delete-file (buffer-file-name))
+    (kill-current-buffer))
+
+  (defun split-window-prefer-vertically (window)
+    "Если открыто лишь одно окно, исключая минибуффер,
+    в таком случае разделить окно горизонтально."
+    (if (and (one-window-p t)
+             (not (active-minibuffer-window)))
+        (let ((split-width-threshold 0))
+          (split-window-sensibly window))
+      (split-window-sensibly window)))
+
   ;; Увеличение порога срабатывания сборщика мусора
   (setq gc-cons-threshold (* 50 1000 1000))
   ;; Подключение репозиториев пакетов
@@ -113,32 +139,6 @@
   ;; Переключить комментарии выделенного фрагмента по C-c C-k
   (define-key prog-mode-map (kbd "C-c C-k") 'comment-or-uncomment-region)
 
-  ;; Добавление индикатора к `completing-read-multiple'.
-  ;; Выглядит как [CRM<разделитель>], например, [CRM,] если разделитель запятая.
-  (defun crm-indicator (args)
-    (cons (format "[CRM%s] %s"
-                  (replace-regexp-in-string
-                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                   crm-separator)
-                  (car args))
-          (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
-  (defun delete-current-file ()
-    "Удалить текущий файл и закрыть буфер."
-    (interactive)
-    (delete-file (buffer-file-name))
-    (kill-current-buffer))
-
-  (defun split-window-prefer-vertically (window)
-    "Если открыто лишь одно окно, исключая минибуффер,
-    в таком случае разделить окно горизонтально."
-    (if (and (one-window-p t)
-             (not (active-minibuffer-window)))
-        (let ((split-width-threshold 0))
-          (split-window-sensibly window))
-      (split-window-sensibly window)))
-
   ;; Убрать курсор из запроса минибуффера
   (setq minibuffer-prompt-properties
         '(read-only t cursor-intangible t face minibuffer-prompt))
@@ -154,9 +154,6 @@
   ;; Разделять окно только по вертикали
   (setq split-window-preferred-function 'split-window-prefer-vertically)
   )
-
-;; Поиск при помощи ag
-(use-package ag)
 
 ;; Управление буферами и список буферов по C-x C-b
 (use-package ibuffer
@@ -204,59 +201,6 @@
   :if (display-graphic-p))
 (use-package all-the-icons-dired)
 
-(use-package dirvish
-  :after (all-the-icons pdf-tools)
-  :init
-  (dirvish-override-dired-mode)
-  (require 'dired-x)
-  (setq dired-omit-files
-        (concat dired-omit-files "\\|^\\..+$"))
-  (setq dired-omit-mode t)
-  (setq dirvish-fd-program "fdfind")
-  (setq dirvish-default-layout '(0 0.4 0.6))
-  :custom
-  (dirvish-quick-access-entries ; Настройка быстрого доступа
-   '(("h" "~/"               "Home")
-     ("d" "~/Загрузки/" "Downloads")
-     ("e" "~/.emacs.d/"     "Emacs")
-     ("r" "~/org-roam/" "OrgRoam")
-     ("s" "~/croesus/" "Fort Ludios")))
-  :config
-  ;; (dirvish-peek-mode) ; Предпросмотр файлов в минибуффере
-  (dirvish-side-follow-mode)
-  (setq dirvish-mode-line-format
-        '(:left (sort symlink) :right (omit yank index)))
-  (setq dirvish-attributes
-        '(all-the-icons file-time file-size collapse subtree-state vc-state git-msg))
-  ;; (setq delete-by-moving-to-trash t)
-  (setq dired-listing-switches
-        "-la --human-readable --group-directories-first --no-group")
-  (setq dirvish-open-with-programs
-        (when-let ((vlc (executable-find "vlc")))
-          `((,dirvish-audio-exts . (,vlc "%f"))
-            (,dirvish-video-exts . (,vlc "%f")))))
-  :bind ; Bind `dirvish|dirvish-side|dirvish-dwim' as you see fit
-  (("C-c f" . dirvish-fd)
-   ("<f9>"  . dirvish-side)
-   :map dirvish-mode-map ; Dirvish наследует `dired-mode-map'
-   ("a"   . dirvish-quick-access)
-   ("f"   . dirvish-file-info-menu)
-   ("y"   . dirvish-yank-menu)
-   ("N"   . dirvish-narrow)
-   ;;("^"   . dirvish-history-last)
-   ("h"   . dirvish-history-jump) ; переназначено с `describe-mode'
-   ("s"   . dirvish-quicksort)    ; переназначено с `dired-sort-toggle-or-edit'
-   ("v"   . dirvish-vc-menu)      ; переназначено с `dired-view-file'
-   ("TAB" . dirvish-subtree-toggle)
-   ("M-f" . dirvish-history-go-forward)
-   ("M-b" . dirvish-history-go-backward)
-   ("M-l" . dirvish-ls-switches-menu)
-   ("M-m" . dirvish-mark-menu)
-   ("M-t" . dirvish-layout-toggle)
-   ("M-s" . dirvish-setup-menu)
-   ("M-e" . dirvish-emerge-menu)
-   ("M-j" . dirvish-fd-jump)))
-
 ;; Настройки для работы с Docker
 (use-package docker-compose-mode)
 (use-package dockerfile-mode)
@@ -265,9 +209,6 @@
 (use-package solo-jazz-theme
   :config
   (load-theme 'solo-jazz t))
-(use-package solaire-mode
-  :after solo-jazz-theme
-  :config (solaire-global-mode +1))
 
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
@@ -494,13 +435,12 @@
 ;; Включение `orderless' режима автодополнения.
 ;; Нужно для гибкого поиска через vertico: например при поиске ноды в org-roam
 (use-package orderless
-  :init
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-pcompletion)))
-        read-file-name-completion-ignore-case t
-        read-buffer-completion-ignore-case t
-        completion-ignore-case t))
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion))))
+  (read-file-name-completion-ignore-case t)
+  (read-buffer-completion-ignore-case t)
+  (completion-ignore-case t))
 
 ;; Пакет для экспорта из .org в другие форматы
 (use-package ox-pandoc)
@@ -514,13 +454,6 @@
 
 ;; pdf-tools для чтения PDF файлов
 (use-package pdf-tools)
-
-;; Настройки для php-mode
-(use-package php-mode
-  :mode
-  ("\\.php\\'" . php-mode))
-
-(add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
 
 ;; Управление проектами
 (use-package projectile
@@ -553,9 +486,9 @@
 
 ;; Пакет для автоматического использования su/sudo для редактирования файлов
 ;; в случае если файл не может быть отредактирован текущим пользователем
-(use-package su
+(use-package auto-sudoedit
   :config
-  (su-mode +1))
+  (auto-sudoedit-mode 1))
 
 ;; Пакеты для работы с Terraform
 (use-package terraform-doc)
@@ -563,9 +496,31 @@
   :config
   (setq terraform-format-on-save t))
 
+;; Настройки TRAMP
+(use-package tramp
+  :custom
+  (vc-handled-backends '(Git))
+  (tramp-verbose 2))
+
+;; Отображение transient-mode в отдельном фрейме по середине экрана
 (use-package transient-posframe
   :config
   (transient-posframe-mode))
+
+;; Пакеты treemacs для отображения файлового дерева
+(use-package treemacs
+  :bind ("<f9>" . treemacs)
+  :custom
+  (treemacs-width 30)
+  :config
+  (add-hook 'treemacs-mode-hook (lambda () (text-scale-decrease 1)))
+  (treemacs-follow-mode 1))
+(use-package treemacs-all-the-icons
+  :after (treemacs))
+(use-package treemacs-magit
+  :after (treemacs magit))
+(use-package treemacs-projectile
+  :after (treemacs projectile))
 
 ;; Пакет vertico для вертикального автодополнения
 (use-package vertico
