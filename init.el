@@ -1,125 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
-;; #############################################################################
-;; #                                                                           #
-;; #                Настройки пакетов с применением use-package                #
-;; #                                                                           #
-;; #############################################################################
 
-;; Поиск при помощи ag
-(use-package ag)
-
-;; Управление буферами и список буферов по C-x C-b
-(use-package ibuffer
-  :config
-  (defalias 'list-buffers 'ibuffer))
-
-;; Настройки клиента IRC
-(use-package circe
-  :after epg
-  :config
-  ;; Выравнивание никнеймов
-  (setq circe-format-say "{nick:-16s} {body}")
-  ;; Отображать собственный никнейм
-  (setq circe-format-self-say "<{nick}> {body}")
-  ;; Показывать название канала в prompt
-  (add-hook 'circe-chat-mode-hook 'my-circe-prompt)
-  (defun my-circe-prompt ()
-    (lui-set-prompt
-     (concat (propertize (concat (buffer-name) ">")
-                         'face 'circe-prompt-face)
-             " ")))
-  ;; Показывать время сообщений справа
-  (setq
-   lui-time-stamp-position 'right-margin
-   lui-time-stamp-format "%H:%M")
-  (add-hook 'lui-mode-hook 'my-circe-set-margin)
-  (defun my-circe-set-margin ()
-    (setq right-margin-width 5)))
-
-;; Настройки company-mode
-(use-package company
-  :config
-  (setq company-idle-delay 0.05)
-  (setq company-minimum-prefix-length 1)
-  (add-hook 'after-init-hook 'global-company-mode)
-  (global-set-key (kbd "C-<tab>") 'company-complete))
-(use-package company-box
-  :hook (company-mode . company-box-mode))
-
-;; Улучшенная работа с crontab файлами
-(use-package crontab-mode)
-
-;; Улучшенный dired-mode
-(use-package all-the-icons
-  :if (display-graphic-p))
-(use-package all-the-icons-dired)
-
-(use-package dirvish
-  :after (all-the-icons pdf-tools)
-  :init
-  (dirvish-override-dired-mode)
-  (require 'dired-x)
-  (setq dired-omit-files
-        (concat dired-omit-files "\\|^\\..+$"))
-  (setq dired-omit-mode t)
-  (setq dirvish-fd-program "fdfind")
-  (setq dirvish-default-layout '(0 0.4 0.6))
-  :custom
-  (dirvish-quick-access-entries ; Настройка быстрого доступа
-   '(("h" "~/"               "Home")
-     ("d" "~/Загрузки/" "Downloads")
-     ("e" "~/.emacs.d/"     "Emacs")
-     ("r" "~/org-roam/" "OrgRoam")
-     ("s" "~/croesus/" "Fort Ludios")))
-  :config
-  ;; (dirvish-peek-mode) ; Предпросмотр файлов в минибуффере
-  (dirvish-side-follow-mode)
-  (setq dirvish-mode-line-format
-        '(:left (sort symlink) :right (omit yank index)))
-  (setq dirvish-attributes
-        '(all-the-icons file-time file-size collapse subtree-state vc-state git-msg))
-  ;; (setq delete-by-moving-to-trash t)
-  (setq dired-listing-switches
-        "-la --human-readable --group-directories-first --no-group")
-  (setq dirvish-open-with-programs
-        (when-let ((vlc (executable-find "vlc")))
-          `((,dirvish-audio-exts . (,vlc "%f"))
-            (,dirvish-video-exts . (,vlc "%f")))))
-  :bind ; Bind `dirvish|dirvish-side|dirvish-dwim' as you see fit
-  (("C-c f" . dirvish-fd)
-   ("<f9>"  . dirvish-side)
-   :map dirvish-mode-map ; Dirvish наследует `dired-mode-map'
-   ("a"   . dirvish-quick-access)
-   ("f"   . dirvish-file-info-menu)
-   ("y"   . dirvish-yank-menu)
-   ("N"   . dirvish-narrow)
-   ;;("^"   . dirvish-history-last)
-   ("h"   . dirvish-history-jump) ; переназначено с `describe-mode'
-   ("s"   . dirvish-quicksort)    ; переназначено с `dired-sort-toggle-or-edit'
-   ("v"   . dirvish-vc-menu)      ; переназначено с `dired-view-file'
-   ("TAB" . dirvish-subtree-toggle)
-   ("M-f" . dirvish-history-go-forward)
-   ("M-b" . dirvish-history-go-backward)
-   ("M-l" . dirvish-ls-switches-menu)
-   ("M-m" . dirvish-mark-menu)
-   ("M-t" . dirvish-layout-toggle)
-   ("M-s" . dirvish-setup-menu)
-   ("M-e" . dirvish-emerge-menu)
-   ("M-j" . dirvish-fd-jump)))
-
-;; Настройки для работы с Docker
-(use-package docker-compose-mode)
-(use-package dockerfile-mode)
-
-;; Цветовые схемы
-(use-package solo-jazz-theme
-  :config
-  (load-theme 'solo-jazz t))
-(use-package solaire-mode
-  :after solo-jazz-theme
-  :config (solaire-global-mode +1))
-
-;; Немного глобальных настроек
+;; Немного глобальных настроек самого Emacs, затем
+;; настройки пакетов в алфавитном порядке
 (use-package emacs
   :functions
   (crm-indicator
@@ -273,6 +155,120 @@
   (setq split-window-preferred-function 'split-window-prefer-vertically)
   )
 
+;; Поиск при помощи ag
+(use-package ag)
+
+;; Управление буферами и список буферов по C-x C-b
+(use-package ibuffer
+  :config
+  (defalias 'list-buffers 'ibuffer))
+
+;; Настройки клиента IRC
+(use-package circe
+  :after epg
+  :config
+  ;; Выравнивание никнеймов
+  (setq circe-format-say "{nick:-16s} {body}")
+  ;; Отображать собственный никнейм
+  (setq circe-format-self-say "<{nick}> {body}")
+  ;; Показывать название канала в prompt
+  (add-hook 'circe-chat-mode-hook 'my-circe-prompt)
+  (defun my-circe-prompt ()
+    (lui-set-prompt
+     (concat (propertize (concat (buffer-name) ">")
+                         'face 'circe-prompt-face)
+             " ")))
+  ;; Показывать время сообщений справа
+  (setq
+   lui-time-stamp-position 'right-margin
+   lui-time-stamp-format "%H:%M")
+  (add-hook 'lui-mode-hook 'my-circe-set-margin)
+  (defun my-circe-set-margin ()
+    (setq right-margin-width 5)))
+
+;; Настройки company-mode
+(use-package company
+  :config
+  (setq company-idle-delay 0.05)
+  (setq company-minimum-prefix-length 1)
+  (add-hook 'after-init-hook 'global-company-mode)
+  (global-set-key (kbd "C-<tab>") 'company-complete))
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+;; Улучшенная работа с crontab файлами
+(use-package crontab-mode)
+
+;; Улучшенный dired-mode
+(use-package all-the-icons
+  :if (display-graphic-p))
+(use-package all-the-icons-dired)
+
+(use-package dirvish
+  :after (all-the-icons pdf-tools)
+  :init
+  (dirvish-override-dired-mode)
+  (require 'dired-x)
+  (setq dired-omit-files
+        (concat dired-omit-files "\\|^\\..+$"))
+  (setq dired-omit-mode t)
+  (setq dirvish-fd-program "fdfind")
+  (setq dirvish-default-layout '(0 0.4 0.6))
+  :custom
+  (dirvish-quick-access-entries ; Настройка быстрого доступа
+   '(("h" "~/"               "Home")
+     ("d" "~/Загрузки/" "Downloads")
+     ("e" "~/.emacs.d/"     "Emacs")
+     ("r" "~/org-roam/" "OrgRoam")
+     ("s" "~/croesus/" "Fort Ludios")))
+  :config
+  ;; (dirvish-peek-mode) ; Предпросмотр файлов в минибуффере
+  (dirvish-side-follow-mode)
+  (setq dirvish-mode-line-format
+        '(:left (sort symlink) :right (omit yank index)))
+  (setq dirvish-attributes
+        '(all-the-icons file-time file-size collapse subtree-state vc-state git-msg))
+  ;; (setq delete-by-moving-to-trash t)
+  (setq dired-listing-switches
+        "-la --human-readable --group-directories-first --no-group")
+  (setq dirvish-open-with-programs
+        (when-let ((vlc (executable-find "vlc")))
+          `((,dirvish-audio-exts . (,vlc "%f"))
+            (,dirvish-video-exts . (,vlc "%f")))))
+  :bind ; Bind `dirvish|dirvish-side|dirvish-dwim' as you see fit
+  (("C-c f" . dirvish-fd)
+   ("<f9>"  . dirvish-side)
+   :map dirvish-mode-map ; Dirvish наследует `dired-mode-map'
+   ("a"   . dirvish-quick-access)
+   ("f"   . dirvish-file-info-menu)
+   ("y"   . dirvish-yank-menu)
+   ("N"   . dirvish-narrow)
+   ;;("^"   . dirvish-history-last)
+   ("h"   . dirvish-history-jump) ; переназначено с `describe-mode'
+   ("s"   . dirvish-quicksort)    ; переназначено с `dired-sort-toggle-or-edit'
+   ("v"   . dirvish-vc-menu)      ; переназначено с `dired-view-file'
+   ("TAB" . dirvish-subtree-toggle)
+   ("M-f" . dirvish-history-go-forward)
+   ("M-b" . dirvish-history-go-backward)
+   ("M-l" . dirvish-ls-switches-menu)
+   ("M-m" . dirvish-mark-menu)
+   ("M-t" . dirvish-layout-toggle)
+   ("M-s" . dirvish-setup-menu)
+   ("M-e" . dirvish-emerge-menu)
+   ("M-j" . dirvish-fd-jump)))
+
+;; Настройки для работы с Docker
+(use-package docker-compose-mode)
+(use-package dockerfile-mode)
+
+;; Цветовые схемы
+(use-package solo-jazz-theme
+  :config
+  (load-theme 'solo-jazz t))
+(use-package solaire-mode
+  :after solo-jazz-theme
+  :config (solaire-global-mode +1))
+
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
 ;; открытом виде в init.el
@@ -364,6 +360,14 @@
    my/org-insert-date-keyword
    my/org-export-before-parsing)
   :config
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Этот код необходимо поместить в ~/org-roam/.dir-locals.el ;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; ((org-mode . ((org-hugo-base-dir . "~/weirdvic\.github\.io")
+  ;;             (eval . (setq-local
+  ;;                      org-export-before-parsing-functions
+  ;;                      (append org-export-before-parsing-functions '(my/org-export-before-parsing)))))))
+
   (defun my/org-roam-select (kind)
     "Выбирает ноды org-roam, содержащие определённое слово в параметре KIND"
     (cl-remove-if-not
@@ -536,6 +540,7 @@
 
 ;; Пакет для работы клавиш емакса в русской раскладке
 (use-package reverse-im
+  :demand t
   :custom
   (reverse-im-input-methods '("russian-computer"))
   :config
