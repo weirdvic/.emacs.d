@@ -205,10 +205,54 @@
 (use-package docker-compose-mode)
 (use-package dockerfile-mode)
 
-;; Цветовые схемы
-(use-package solo-jazz-theme
+;; Базовый пакет для поддержки Go
+(use-package go-mode)
+;; Базовый пакет для поддержки Python
+(use-package python-mode)
+;; Поддержка виртуальных окружений Python
+(use-package pyvenv
   :config
-  (load-theme 'solo-jazz t))
+  (pyvenv-mode t)
+  (setq pyvenv-post-activate-hooks
+        (list (lambda ()
+                (setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
+  (setq pyvenv-post-deactivate-hooks
+        (list (lambda ()
+                (setq python-shell-interpreter "python3")))))
+(use-package pyvenv-auto
+  :hook ((python-mode . pyvenv-auto-run)))
+
+(use-package eglot
+  :hook
+  ((python-mode . eglot-ensure))
+  ((go-mode . eglot-ensure)))
+
+;; Цветовые схемы
+(use-package modus-themes
+  :config
+  (setq
+   ;;modus-themes-common-palette-overrides nil
+   modus-themes-bold-constructs t
+   modus-themes-italic-constructs t
+   modus-themes-prompts '(bold italic)
+   modus-themes-org-blocks 'gray-background
+   modus-themes-common-palette-overrides
+   `((bg-paren-match bg-magenta-intense)
+     (fg-completion-match-0 blue)
+     (fg-completion-match-1 yellow)
+     (fg-completion-match-2 blue)
+     (fg-completion-match-3 yellow)
+     (bg-completion-match-0 bg-blue-nuanced)
+     (bg-completion-match-1 bg-yellow-nuanced)
+     (bg-completion-match-2 bg-blue-nuanced)
+     (bg-completion-match-3 bg-yellow-nuanced)
+     (fg-heading-1 blue-warmer)
+     (fg-heading-2 yellow-cooler)
+     (fg-heading-3 cyan-cooler)
+     (fg-main "#24292e")
+     (bg-mark-other bg-red-subtle)
+   ,@modus-themes-preset-overrides-faint))
+  (load-theme 'modus-operandi-tinted :no-confirm))
 
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
@@ -231,11 +275,6 @@
   :config
   (eyebrowse-mode t))
 
-;; Базовый пакет для поддержки Go
-(use-package go-mode
-  ;; Перед сохранением файла форматировать код и сортировать импорты
-  :hook ((go-mode . eglot-ensure)))
-
 ;; Настройки интеграции с Kubernetes
 (use-package kele
   :config
@@ -251,6 +290,9 @@
 (use-package mood-line
   :config
   (mood-line-mode))
+
+;; Поддержка EPUB формата
+(use-package nov)
 
 ;; Общие настройки org-mode
 (use-package org
@@ -327,7 +369,8 @@
             (let ((org-hugo-section section))
               (org-hugo-export-wim-to-md))
             (unless (member (current-buffer) before-buffers)
-              (kill-buffer (current-buffer))))))))
+              (kill-buffer (current-buffer)))))))
+    (my/org-roam-update-graph))
 
   (defun my/org-roam-update-graph ()
     "Функция для обновления графа связей заметок org-roam"
@@ -462,10 +505,6 @@
   :bind (:map projectile-mode-map
               ("s-p" . projectile-command-map)
               ("C-c p" . projectile-command-map)))
-
-;; Поддержка виртуальных окружений Python
-(use-package pyvenv)
-(use-package pyvenv-auto)
 
 ;; Подсветка скобок
 (use-package rainbow-delimiters
