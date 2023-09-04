@@ -228,31 +228,11 @@
   ((go-mode . eglot-ensure)))
 
 ;; Цветовые схемы
-(use-package modus-themes
+(use-package ef-themes
   :config
-  (setq
-   ;;modus-themes-common-palette-overrides nil
-   modus-themes-bold-constructs t
-   modus-themes-italic-constructs t
-   modus-themes-prompts '(bold italic)
-   modus-themes-org-blocks 'gray-background
-   modus-themes-common-palette-overrides
-   `((bg-paren-match bg-magenta-intense)
-     (fg-completion-match-0 blue)
-     (fg-completion-match-1 yellow)
-     (fg-completion-match-2 blue)
-     (fg-completion-match-3 yellow)
-     (bg-completion-match-0 bg-blue-nuanced)
-     (bg-completion-match-1 bg-yellow-nuanced)
-     (bg-completion-match-2 bg-blue-nuanced)
-     (bg-completion-match-3 bg-yellow-nuanced)
-     (fg-heading-1 blue-warmer)
-     (fg-heading-2 yellow-cooler)
-     (fg-heading-3 cyan-cooler)
-     (fg-main "#24292e")
-     (bg-mark-other bg-red-subtle)
-   ,@modus-themes-preset-overrides-faint))
-  (load-theme 'modus-operandi-tinted :no-confirm))
+  (setq ef-themes-to-toggle '(ef-cyprus ef-bio))
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme 'ef-cyprus :no-confirm))
 
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в

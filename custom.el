@@ -6,7 +6,7 @@
  '(ispell-dictionary nil)
  '(native-comp-async-report-warnings-errors nil)
  '(package-selected-packages
-   '(zygospore which-key-posframe vterm vertico-posframe treemacs-projectile treemacs-magit treemacs-all-the-icons transient-posframe terraform-mode terraform-doc reverse-im rainbow-delimiters pyvenv-auto python-mode pdf-tools ox-pandoc ox-hugo org-roam-ui orderless nov mood-line modus-themes kubedoc kele go-mode eyebrowse exec-path-from-shell eglot dockerfile-mode docker-compose-mode crontab-mode consult-org-roam company-box circe auto-sudoedit all-the-icons-dired))
+   '(ef-themes zygospore which-key-posframe vterm vertico-posframe treemacs-projectile treemacs-magit treemacs-all-the-icons transient-posframe terraform-mode terraform-doc reverse-im rainbow-delimiters pyvenv-auto python-mode pdf-tools ox-pandoc ox-hugo org-roam-ui orderless nov mood-line kubedoc kele go-mode eyebrowse exec-path-from-shell eglot dockerfile-mode docker-compose-mode crontab-mode consult-org-roam company-box circe auto-sudoedit all-the-icons-dired))
  '(safe-local-variable-values
    '((eval setq-local org-export-before-parsing-functions
            (append org-export-before-parsing-functions
