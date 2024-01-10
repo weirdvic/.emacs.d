@@ -56,11 +56,10 @@
   (setq inhibit-startup-screen t)
 
   ;; Отдельные настройки для GUI версии
-  (when (window-system)
-    ;;(menu-bar-mode -1)
-    (tool-bar-mode -1)
-    (scroll-bar-mode -1)
-    (setq-default frame-title-format '("Emacs " emacs-version)))
+  ;;(menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (setq-default frame-title-format '("Emacs " emacs-version))
 
   ;; Использование desktop.el для сохранения состояния фрейма и окон
   (desktop-save-mode 1)
@@ -183,6 +182,11 @@
   (defun my-circe-set-margin ()
     (setq right-margin-width 5)))
 
+;; Уведомления в IRC
+(use-package circe-notifications
+  :config
+  (add-hook 'circe-server-connected-hook 'enable-circe-notifications))
+
 ;; Настройки company-mode
 (use-package company
   :config
@@ -207,6 +211,8 @@
 
 ;; Базовый пакет для поддержки Go
 (use-package go-mode)
+;; Базовый пакет для поддержки PHP
+(use-package php-mode)
 ;; Базовый пакет для поддержки Python
 (use-package python-mode)
 ;; Поддержка виртуальных окружений Python
@@ -229,10 +235,18 @@
 
 ;; Цветовые схемы
 (use-package ef-themes
+  :init
+  (defun set-seasonal-theme ()
+    "Установить тему в соответствии с текущим временем года"
+    (let ((current-month (string-to-number (format-time-string "%m"))))
+      (cond ((member current-month '(12 1 2)) (load-theme 'ef-winter :no-confirm))
+            ((member current-month '(3 4 5)) (load-theme 'ef-spring :no-confirm))
+            ((member current-month '(6 7 8)) (load-theme 'ef-summer :no-confirm))
+            ((member current-month '(9 10 11)) (load-theme 'ef-autumn :no-confirm)))))
   :config
-  (setq ef-themes-to-toggle '(ef-cyprus ef-bio))
+  (setq ef-themes-to-toggle '(ef-summer ef-winter))
   (mapc #'disable-theme custom-enabled-themes)
-  (load-theme 'ef-cyprus :no-confirm))
+  (set-seasonal-theme))
 
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
@@ -517,6 +531,8 @@
 
 ;; Настройки TRAMP
 (use-package tramp
+  :config
+  (add-to-list 'tramp-remote-path "/data/data/com.termux/files/usr/bin" t)
   :custom
   (vc-handled-backends '(Git))
   (tramp-verbose 2))
