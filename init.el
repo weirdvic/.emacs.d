@@ -237,12 +237,15 @@
 (use-package ef-themes
   :init
   (defun set-seasonal-theme ()
-    "Установить тему в соответствии с текущим временем года"
+    "Установить светлую тему в соответствии с текущим временем года"
     (let ((current-month (string-to-number (format-time-string "%m"))))
-      (cond ((member current-month '(12 1 2)) (load-theme 'ef-winter :no-confirm))
-            ((member current-month '(3 4 5)) (load-theme 'ef-spring :no-confirm))
-            ((member current-month '(6 7 8)) (load-theme 'ef-summer :no-confirm))
-            ((member current-month '(9 10 11)) (load-theme 'ef-autumn :no-confirm)))))
+      (cond
+       ;; `ef-winter' тёмная тема, заменил её на `ef-frost'
+       ((member current-month '(12 1 2)) (load-theme 'ef-frost :no-confirm))
+       ((member current-month '(3 4 5)) (load-theme 'ef-spring :no-confirm))
+       ((member current-month '(6 7 8)) (load-theme 'ef-summer :no-confirm))
+       ;; `ef-autumn' тёмная тема, заменил её на `ef-arbutus'
+       ((member current-month '(9 10 11)) (load-theme 'ef-arbutus :no-confirm)))))
   :config
   (setq ef-themes-to-toggle '(ef-summer ef-winter))
   (mapc #'disable-theme custom-enabled-themes)
@@ -268,6 +271,10 @@
 (use-package eyebrowse
   :config
   (eyebrowse-mode t))
+
+;; Настройки для работы с F#
+(use-package fsharp-mode
+  :defer t)
 
 ;; Настройки интеграции с Kubernetes
 (use-package kele
@@ -549,7 +556,8 @@
   (treemacs-width 30)
   :config
   (add-hook 'treemacs-mode-hook (lambda () (text-scale-decrease 1)))
-  (treemacs-follow-mode 1))
+  (treemacs-follow-mode 1)
+  (treemacs-project-follow-mode 1))
 (use-package treemacs-all-the-icons
   :after (treemacs))
 (use-package treemacs-magit
