@@ -544,11 +544,6 @@
   (vc-handled-backends '(Git))
   (tramp-verbose 2))
 
-;; Отображение transient-mode в отдельном фрейме по середине экрана
-(use-package transient-posframe
-  :config
-  (transient-posframe-mode))
-
 ;; Пакеты treemacs для отображения файлового дерева
 (use-package treemacs
   :bind ("<f9>" . treemacs)
