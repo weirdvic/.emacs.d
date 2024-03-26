@@ -263,7 +263,7 @@
 
 ;; Получать значение $PATH из шелла
 (use-package exec-path-from-shell
-  :config
+  :init
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
@@ -485,9 +485,6 @@
   (read-file-name-completion-ignore-case t)
   (read-buffer-completion-ignore-case t)
   (completion-ignore-case t))
-
-;; Пакет для экспорта из .org в другие форматы
-(use-package ox-pandoc)
 
 ;; Экспорт из .org в Hugo SSG
 (use-package ox-hugo
