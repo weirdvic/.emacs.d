@@ -56,7 +56,7 @@
   (setq inhibit-startup-screen t)
 
   ;; Отдельные настройки для GUI версии
-  ;;(menu-bar-mode -1)
+  (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (setq-default frame-title-format '("Emacs " emacs-version))
@@ -267,11 +267,6 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
-;; Eyebrowse для работы с раскладками окон
-(use-package eyebrowse
-  :config
-  (eyebrowse-mode t))
-
 ;; Настройки для работы с F#
 (use-package fsharp-mode
   :defer t)
@@ -291,9 +286,6 @@
 (use-package mood-line
   :config
   (mood-line-mode))
-
-;; Поддержка EPUB формата
-(use-package nov)
 
 ;; Общие настройки org-mode
 (use-package org
@@ -496,14 +488,6 @@
 ;; pdf-tools для чтения PDF файлов
 (use-package pdf-tools)
 
-;; Управление проектами
-(use-package projectile
-  :init
-  (projectile-mode +1)
-  :bind (:map projectile-mode-map
-              ("s-p" . projectile-command-map)
-              ("C-c p" . projectile-command-map)))
-
 ;; Подсветка скобок
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -526,6 +510,20 @@
 (use-package auto-sudoedit
   :config
   (auto-sudoedit-mode 1))
+
+;; Настройки tab-bar для работы со вкладками
+(use-package tab-bar
+  :config
+  (setq tab-bar-show 1)
+  (setq tab-bar-close-button-show nil)
+  (setq tab-bar-new-tab-choice "*scratch*")
+  (setq tab-bar-tab-hints t)
+  (setq tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
+  (setq tab-bar-select-tab-modifiers "super")
+  (global-set-key (kbd "s-{") 'tab-bar-switch-to-prev-tab)
+  (global-set-key (kbd "s-}") 'tab-bar-switch-to-next-tab)
+  (global-set-key (kbd "s-t") 'tab-bar-new-tab)
+  (global-set-key (kbd "s-w") 'tab-bar-close-tab))
 
 ;; Пакеты для работы с Terraform
 (use-package terraform-doc)
@@ -554,8 +552,6 @@
   :after (treemacs))
 (use-package treemacs-magit
   :after (treemacs magit))
-(use-package treemacs-projectile
-  :after (treemacs projectile))
 
 ;; Пакет vertico для вертикального автодополнения
 (use-package vertico
