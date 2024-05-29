@@ -14,8 +14,10 @@ N_COM = 7  # Desired number of communities
 N_MISSING = 20  # Number of predicted missing links
 MAX_NODES = 200  # Number of nodes in the final graph
 
+
 def to_rellink(inp: str) -> str:
     return pathlib.Path(inp).stem
+
 
 def to_kebab_case(input_string):
     # Replace spaces and underscores with hyphens
@@ -23,6 +25,7 @@ def to_kebab_case(input_string):
     # Convert to lowercase
     kebab_case_string = kebab_case_string.lower()
     return kebab_case_string
+
 
 def build_graph() -> nx.DiGraph:
     """Build a graph from the org-roam database."""
@@ -35,9 +38,9 @@ def build_graph() -> nx.DiGraph:
                                 id,
                                 title,
                                 CASE
-                                    WHEN properties LIKE '%("KIND" . "post")%' THEN 'posts'
-                                    WHEN properties LIKE '%("KIND" . "mycelium")%' THEN 'mycelium'
-                                    ELSE 'regular'
+                                WHEN properties LIKE '%("KIND" . "post")%' THEN 'posts'
+                                WHEN properties LIKE '%("KIND" . "mycelium")%' THEN 'mycelium'
+                                ELSE 'regular'
                                 END AS node_type
                             FROM nodes
                             WHERE node_type != 'regular';''')
@@ -68,10 +71,11 @@ def build_graph() -> nx.DiGraph:
         "tooltip": n[1].strip("\""),
         "title": n[1].strip("\""),
         "type": n[2]
-    }) for n in  nodes)
+    }) for n in nodes)
     graph.add_edges_from(n for n in links if n[0] in graph.nodes and n[1] in graph.nodes)
     conn.close()
     return graph
+
 
 def compute_centrality(dot_graph: nx.DiGraph) -> None:
     """Add a `centrality` attribute to each node with its PageRank score.
