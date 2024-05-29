@@ -1,0 +1,14 @@
+elpa/
+venv/
+.cache/
+.emacs.desktop
+.emacs.desktop.lock
+.org-id-locations
+bookmarks
+history
+projects
+tramp
+org-roam.db
+eln-cache/
+auto-save-list/
+session.*

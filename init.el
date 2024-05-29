@@ -159,34 +159,6 @@
   :config
   (defalias 'list-buffers 'ibuffer))
 
-;; Настройки клиента IRC
-(use-package circe
-  :after epg
-  :config
-  ;; Выравнивание никнеймов
-  (setq circe-format-say "{nick:-16s} {body}")
-  ;; Отображать собственный никнейм
-  (setq circe-format-self-say "<{nick}> {body}")
-  ;; Показывать название канала в prompt
-  (add-hook 'circe-chat-mode-hook 'my-circe-prompt)
-  (defun my-circe-prompt ()
-    (lui-set-prompt
-     (concat (propertize (concat (buffer-name) ">")
-                         'face 'circe-prompt-face)
-             " ")))
-  ;; Показывать время сообщений справа
-  (setq
-   lui-time-stamp-position 'right-margin
-   lui-time-stamp-format "%H:%M")
-  (add-hook 'lui-mode-hook 'my-circe-set-margin)
-  (defun my-circe-set-margin ()
-    (setq right-margin-width 5)))
-
-;; Уведомления в IRC
-(use-package circe-notifications
-  :config
-  (add-hook 'circe-server-connected-hook 'enable-circe-notifications))
-
 ;; Настройки company-mode
 (use-package company
   :config
@@ -204,34 +176,6 @@
 (use-package all-the-icons
   :if (display-graphic-p))
 (use-package all-the-icons-dired)
-
-;; Настройки для работы с Docker
-(use-package docker-compose-mode)
-(use-package dockerfile-mode)
-
-;; Базовый пакет для поддержки Go
-(use-package go-mode)
-;; Базовый пакет для поддержки PHP
-(use-package php-mode)
-;; Базовый пакет для поддержки Python
-(use-package python-mode)
-;; Поддержка виртуальных окружений Python
-(use-package pyvenv
-  :config
-  (pyvenv-mode t)
-  (setq pyvenv-post-activate-hooks
-        (list (lambda ()
-                (setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
-  (setq pyvenv-post-deactivate-hooks
-        (list (lambda ()
-                (setq python-shell-interpreter "python3")))))
-(use-package pyvenv-auto
-  :hook ((python-mode . pyvenv-auto-run)))
-
-(use-package eglot
-  :hook
-  ((python-mode . eglot-ensure))
-  ((go-mode . eglot-ensure)))
 
 ;; Цветовые схемы
 (use-package ef-themes
@@ -266,16 +210,6 @@
   :init
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
-
-;; Настройки для работы с F#
-(use-package fsharp-mode
-  :defer t)
-
-;; Настройки интеграции с Kubernetes
-(use-package kele
-  :config
-  (bind-key (kbd "s-k") kele-command-map kele-mode-map))
-(use-package kubedoc)
 
 ;; Настройки Magit
 (use-package magit
@@ -488,10 +422,6 @@
 ;; pdf-tools для чтения PDF файлов
 (use-package pdf-tools)
 
-;; Подсветка скобок
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
 ;; Пакет для работы клавиш емакса в русской раскладке
 (use-package reverse-im
   :demand t
@@ -525,12 +455,6 @@
   (global-set-key (kbd "s-t") 'tab-bar-new-tab)
   (global-set-key (kbd "s-w") 'tab-bar-close-tab))
 
-;; Пакеты для работы с Terraform
-(use-package terraform-doc)
-(use-package terraform-mode
-  :config
-  (setq terraform-format-on-save t))
-
 ;; Настройки TRAMP
 (use-package tramp
   :config
@@ -538,20 +462,6 @@
   :custom
   (vc-handled-backends '(Git))
   (tramp-verbose 2))
-
-;; Пакеты treemacs для отображения файлового дерева
-(use-package treemacs
-  :bind ("<f9>" . treemacs)
-  :custom
-  (treemacs-width 30)
-  :config
-  (add-hook 'treemacs-mode-hook (lambda () (text-scale-decrease 1)))
-  (treemacs-follow-mode 1)
-  (treemacs-project-follow-mode 1))
-(use-package treemacs-all-the-icons
-  :after (treemacs))
-(use-package treemacs-magit
-  :after (treemacs magit))
 
 ;; Пакет vertico для вертикального автодополнения
 (use-package vertico
