@@ -117,6 +117,7 @@
 
   ;; При нажатии `a' на строке в dired-mode, открывать в том же буфере
   (put 'dired-find-alternate-file 'disabled nil)
+  (setq dired-kill-when-opening-new-dired-buffer t)
 
   ;; Дни недели и месяцы на русском языке
   (setq calendar-week-start-day 1
@@ -173,9 +174,9 @@
 (use-package crontab-mode)
 
 ;; Улучшенный dired-mode
-(use-package all-the-icons
-  :if (display-graphic-p))
-(use-package all-the-icons-dired)
+(use-package all-the-icons)
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
 
 ;; Настройки для работы с Docker
 (use-package docker-compose-mode)
@@ -203,7 +204,8 @@
 (use-package eglot
   :hook
   ((python-mode . eglot-ensure))
-  ((go-mode . eglot-ensure)))
+  ((go-mode . eglot-ensure))
+  ((c-mode . eglot-ensure)))
 
 ;; Цветовые схемы
 (use-package ef-themes
@@ -495,23 +497,24 @@
 (use-package tree-sitter-langs
   :config
   (setq treesit-language-source-alist
- '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-   (cmake "https://github.com/uyha/tree-sitter-cmake")
-   (css "https://github.com/tree-sitter/tree-sitter-css")
-   (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-   (go "https://github.com/tree-sitter/tree-sitter-go")
-   (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
-   (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
-   (html "https://github.com/tree-sitter/tree-sitter-html")
-   (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-   (json "https://github.com/tree-sitter/tree-sitter-json")
-   (make "https://github.com/alemuller/tree-sitter-make")
-   (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-   (python "https://github.com/tree-sitter/tree-sitter-python")
-   (toml "https://github.com/tree-sitter/tree-sitter-toml")
-   (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-   (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-   (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+        '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+          (cmake "https://github.com/uyha/tree-sitter-cmake")
+          (css "https://github.com/tree-sitter/tree-sitter-css")
+          (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+          (go "https://github.com/tree-sitter/tree-sitter-go")
+          (c "https://github.com/tree-sitter/tree-sitter-c")
+          (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
+          (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+          (html "https://github.com/tree-sitter/tree-sitter-html")
+          (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+          (json "https://github.com/tree-sitter/tree-sitter-json")
+          (make "https://github.com/alemuller/tree-sitter-make")
+          (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+          (python "https://github.com/tree-sitter/tree-sitter-python")
+          (toml "https://github.com/tree-sitter/tree-sitter-toml")
+          (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+          (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+          (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
   :after tree-sitter)
 
 ;; Настройки TRAMP
@@ -565,6 +568,22 @@
   :config
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-buffer-name-string "%s vterm"))
+(use-package vterm-toggle
+  :after vterm
+  :bind ("s-`" . vterm-toggle)
+  :config
+  (setq vterm-toggle-fullscreen-p nil)
+  (add-to-list 'display-buffer-alist
+               '((lambda (buffer-or-name _)
+                   (let ((buffer (get-buffer buffer-or-name)))
+                     (with-current-buffer buffer
+                       (or (equal major-mode 'vterm-mode)
+                           (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+                 (display-buffer-reuse-window display-buffer-in-direction)
+                 (direction . bottom)
+                 (dedicated . t)
+                 (reusable-frames . visible)
+                 (window-height . 0.4))))
 
 ;; Подсказывать справку по доступным сочетаниям при нажатии
 ;; C-h во время ввода сочетания
@@ -578,7 +597,3 @@
   :after which-key
   :config
   (which-key-posframe-mode 1))
-
-;; Зум отдельного окна на весь фрейм, как C-b z в tmux
-(use-package zygospore
-  :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
