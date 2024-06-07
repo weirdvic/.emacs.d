@@ -3,11 +3,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("4343cbc036f09361b2912119c63573433df725f599bfbdc16fb97f1e4847a08b" default))
  '(ispell-dictionary nil)
  '(native-comp-async-report-warnings-errors nil)
  '(org-safe-remote-resources '("\\`https://fniessen\\.github\\.io\\(?:/\\|\\'\\)"))
  '(package-selected-packages
-   '(vterm-toggle treemacs tree-sitter-langs treesit-auto magit tree-sitter-mode tree-sitter-lang tab-bar-mode vterm which-key-posframe vertico-posframe treemacs-magit treemacs-all-the-icons terraform-mode terraform-doc reverse-im rainbow-delimiters pyvenv-auto python-mode php-mode pdf-tools ox-hugo org-roam-ui orderless mood-line kubedoc kele go-mode fsharp-mode exec-path-from-shell eglot ef-themes dockerfile-mode docker-compose-mode crontab-mode consult-org-roam company-box circe-notifications auto-sudoedit all-the-icons-dired))
+   '(treemacs tree-sitter-langs treesit-auto magit tree-sitter-mode tree-sitter-lang tab-bar-mode vterm which-key-posframe vertico-posframe treemacs-magit treemacs-all-the-icons terraform-mode terraform-doc reverse-im rainbow-delimiters pyvenv-auto python-mode php-mode pdf-tools ox-hugo org-roam-ui orderless mood-line kubedoc kele go-mode fsharp-mode exec-path-from-shell eglot ef-themes dockerfile-mode docker-compose-mode crontab-mode consult-org-roam company-box circe-notifications auto-sudoedit all-the-icons-dired))
  '(safe-local-variable-values
    '((eval setq-local org-export-before-parsing-functions
            (append org-export-before-parsing-functions

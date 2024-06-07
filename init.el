@@ -153,7 +153,13 @@
   (setq enable-recursive-minibuffers t)
   ;; Разделять окно только по вертикали
   (setq split-window-preferred-function 'split-window-prefer-vertically)
-  )
+
+  (setq major-mode-remap-alist
+        '((python-mode . python-ts-mode)
+          (go-mode . go-ts-mode)
+          (c-mode . c-ts-mode)))
+
+)
 
 ;; Управление буферами и список буферов по C-x C-b
 (use-package ibuffer
@@ -163,6 +169,7 @@
 ;; Настройки company-mode
 (use-package company
   :config
+  (setq tab-always-indent 'complete)
   (setq company-idle-delay 0.05)
   (setq company-minimum-prefix-length 1)
   (add-hook 'after-init-hook 'global-company-mode)
@@ -199,31 +206,20 @@
         (list (lambda ()
                 (setq python-shell-interpreter "python3")))))
 (use-package pyvenv-auto
-  :hook ((python-mode . pyvenv-auto-run)))
+  :hook ((python-ts-mode . pyvenv-auto-run)))
 
 (use-package eglot
   :hook
-  ((python-mode . eglot-ensure))
-  ((go-mode . eglot-ensure))
-  ((c-mode . eglot-ensure)))
+  ((python-ts-mode . eglot-ensure))
+  ((go-ts-mode . eglot-ensure))
+  ((c-ts-mode . eglot-ensure)))
 
 ;; Цветовые схемы
 (use-package ef-themes
-  :init
-  (defun set-seasonal-theme ()
-    "Установить светлую тему в соответствии с текущим временем года"
-    (let ((current-month (string-to-number (format-time-string "%m"))))
-      (cond
-       ;; `ef-winter' тёмная тема, заменил её на `ef-frost'
-       ((member current-month '(12 1 2)) (load-theme 'ef-frost :no-confirm))
-       ((member current-month '(3 4 5)) (load-theme 'ef-spring :no-confirm))
-       ((member current-month '(6 7 8)) (load-theme 'ef-summer :no-confirm))
-       ;; `ef-autumn' тёмная тема, заменил её на `ef-arbutus'
-       ((member current-month '(9 10 11)) (load-theme 'ef-arbutus :no-confirm)))))
   :config
-  (setq ef-themes-to-toggle '(ef-summer ef-winter))
+  (setq ef-themes-to-toggle '(ef-day ef-night))
   (mapc #'disable-theme custom-enabled-themes)
-  (set-seasonal-theme))
+  (load-theme 'ef-day))
 
 ;; Включаем прозрачное шифрование файлов при помощи GPG
 ;; В файле secrets.el.gpg хранятся логины и пароли, которые нельзя хранить в
@@ -568,22 +564,6 @@
   :config
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-buffer-name-string "%s vterm"))
-(use-package vterm-toggle
-  :after vterm
-  :bind ("s-`" . vterm-toggle)
-  :config
-  (setq vterm-toggle-fullscreen-p nil)
-  (add-to-list 'display-buffer-alist
-               '((lambda (buffer-or-name _)
-                   (let ((buffer (get-buffer buffer-or-name)))
-                     (with-current-buffer buffer
-                       (or (equal major-mode 'vterm-mode)
-                           (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
-                 (display-buffer-reuse-window display-buffer-in-direction)
-                 (direction . bottom)
-                 (dedicated . t)
-                 (reusable-frames . visible)
-                 (window-height . 0.4))))
 
 ;; Подсказывать справку по доступным сочетаниям при нажатии
 ;; C-h во время ввода сочетания
