@@ -185,6 +185,12 @@
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
 
+;; Пакет для автоматического использования su/sudo для редактирования файлов
+;; в случае если файл не может быть отредактирован текущим пользователем
+(use-package auto-sudoedit
+  :config
+  (auto-sudoedit-mode 1))
+
 ;; Настройки для работы с Docker
 (use-package docker-compose-mode)
 (use-package dockerfile-mode)
@@ -460,6 +466,10 @@
 ;; pdf-tools для чтения PDF файлов
 (use-package pdf-tools)
 
+(use-package project
+  :config
+  (define-key project-prefix-map "s" 'project-vterm))
+
 ;; Пакет для работы клавиш емакса в русской раскладке
 (use-package reverse-im
   :demand t
@@ -472,12 +482,6 @@
 (use-package savehist
   :init
   (savehist-mode))
-
-;; Пакет для автоматического использования su/sudo для редактирования файлов
-;; в случае если файл не может быть отредактирован текущим пользователем
-(use-package auto-sudoedit
-  :config
-  (auto-sudoedit-mode 1))
 
 ;; Настройки tab-bar для работы со вкладками
 (use-package tab-bar
@@ -571,10 +575,24 @@
 
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
+  :after project
   :bind ("s-x" . vterm)
+  :functions
+  (project-vterm)
   :config
   (setq vterm-kill-buffer-on-exit t)
-  (setq vterm-buffer-name-string "%s vterm"))
+  (setq vterm-buffer-name-string "%s vterm")
+  (defun project-vterm ()
+  (interactive)
+  (require 'comint)
+  (let* ((default-directory (project-root (project-current t)))
+         (default-project-shell-name (project-prefixed-buffer-name "vterm"))
+         (shell-buffer (get-buffer default-project-shell-name)))
+    (if (and shell-buffer (not current-prefix-arg))
+        (if (comint-check-proc shell-buffer)
+            (pop-to-buffer shell-buffer (bound-and-true-p display-comint-buffer-action))
+          (vterm shell-buffer))
+      (vterm (generate-new-buffer-name default-project-shell-name))))))
 
 ;; Подсказывать справку по доступным сочетаниям при нажатии
 ;; C-h во время ввода сочетания

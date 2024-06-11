@@ -9,7 +9,7 @@
  '(native-comp-async-report-warnings-errors nil)
  '(org-safe-remote-resources '("\\`https://fniessen\\.github\\.io\\(?:/\\|\\'\\)"))
  '(package-selected-packages
-   '(treemacs tree-sitter-langs treesit-auto magit tree-sitter-mode tree-sitter-lang tab-bar-mode vterm which-key-posframe vertico-posframe treemacs-magit treemacs-all-the-icons terraform-mode terraform-doc reverse-im rainbow-delimiters pyvenv-auto python-mode php-mode pdf-tools ox-hugo org-roam-ui orderless mood-line kubedoc kele go-mode fsharp-mode exec-path-from-shell eglot ef-themes dockerfile-mode docker-compose-mode crontab-mode consult-org-roam company-box circe-notifications auto-sudoedit all-the-icons-dired))
+   '(project treemacs tree-sitter-langs treesit-auto magit tree-sitter-mode tree-sitter-lang tab-bar-mode vterm which-key-posframe vertico-posframe treemacs-magit treemacs-all-the-icons terraform-mode terraform-doc reverse-im rainbow-delimiters pyvenv-auto python-mode php-mode pdf-tools ox-hugo org-roam-ui orderless mood-line kubedoc kele go-mode fsharp-mode exec-path-from-shell eglot ef-themes dockerfile-mode docker-compose-mode crontab-mode consult-org-roam company-box circe-notifications auto-sudoedit all-the-icons-dired))
  '(safe-local-variable-values
    '((eval setq-local org-export-before-parsing-functions
            (append org-export-before-parsing-functions
