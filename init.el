@@ -196,7 +196,10 @@
 (use-package dockerfile-mode)
 
 ;; Базовый пакет для поддержки Go
-(use-package go-mode)
+(use-package go-ts-mode
+  :config
+  (setq go-ts-mode-indent-offset tab-width))
+
 ;; Базовый пакет для поддержки PHP
 (use-package php-mode)
 ;; Базовый пакет для поддержки Python
@@ -218,7 +221,9 @@
   :hook
   ((python-ts-mode . eglot-ensure))
   ((go-ts-mode . eglot-ensure))
-  ((c-ts-mode . eglot-ensure)))
+  ((c-ts-mode . eglot-ensure))
+  :config
+  (add-hook 'before-save-hook 'eglot-format))
 
 ;; Цветовые схемы
 (use-package ef-themes
@@ -463,6 +468,9 @@
   :config
   (setq org-export-with-author nil))
 
+;; Экспорт из .org посредством pandoc
+(use-package ox-pandoc)
+
 ;; pdf-tools для чтения PDF файлов
 (use-package pdf-tools)
 
@@ -526,6 +534,7 @@
           (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
           (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
           (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+  (add-to-list 'tree-sitter-major-mode-language-alist '(go-ts-mode . go))
   :after tree-sitter)
 
 ;; Настройки TRAMP
@@ -576,6 +585,7 @@
 ;; Пакет vterm для эмулятора терминала внутри Emacs
 (use-package vterm
   :after project
+  :demand t
   :bind ("s-x" . vterm)
   :functions
   (project-vterm)
