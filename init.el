@@ -154,6 +154,13 @@
   ;; Разделять окно только по вертикали
   (setq split-window-preferred-function 'split-window-prefer-vertically)
 
+  ;; Фиксы TRAMP на Windows
+  (when (eq system-type 'windows-nt)
+    (require 'tramp)
+    (push '("-tt")
+          (cadr (assoc 'tramp-login-args
+                       (assoc "ssh" tramp-methods)))))
+
   (setq major-mode-remap-alist
         '((python-mode . python-ts-mode)
           (go-mode . go-ts-mode)
@@ -175,7 +182,42 @@
   (add-hook 'after-init-hook 'global-company-mode)
   (global-set-key (kbd "C-<tab>") 'company-complete))
 (use-package company-box
-  :hook (company-mode . company-box-mode))
+  :hook (company-mode . company-box-mode)
+  :init
+  (setq company-box-icons-alist 'company-box-icons-all-the-icons)
+  :config
+  (require 'all-the-icons)
+  (setf (alist-get 'min-height company-box-frame-parameters) 6)
+  (setq company-box-icons-alist 'company-box-icons-all-the-icons
+        company-box-backends-colors nil
+        company-box-icons-all-the-icons
+        `((Unknown       . ,(all-the-icons-material "find_in_page"             :face 'all-the-icons-purple))
+          (Text          . ,(all-the-icons-material "text_fields"              :face 'all-the-icons-green))
+          (Method        . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+          (Function      . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+          (Constructor   . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+          (Field         . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+          (Variable      . ,(all-the-icons-material "adjust"                   :face 'all-the-icons-blue))
+          (Class         . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
+          (Interface     . ,(all-the-icons-material "settings_input_component" :face 'all-the-icons-red))
+          (Module        . ,(all-the-icons-material "view_module"              :face 'all-the-icons-red))
+          (Property      . ,(all-the-icons-material "settings"                 :face 'all-the-icons-red))
+          (Unit          . ,(all-the-icons-material "straighten"               :face 'all-the-icons-red))
+          (Value         . ,(all-the-icons-material "filter_1"                 :face 'all-the-icons-red))
+          (Enum          . ,(all-the-icons-material "plus_one"                 :face 'all-the-icons-red))
+          (Keyword       . ,(all-the-icons-material "filter_center_focus"      :face 'all-the-icons-red))
+          (Snippet       . ,(all-the-icons-material "short_text"               :face 'all-the-icons-red))
+          (Color         . ,(all-the-icons-material "color_lens"               :face 'all-the-icons-red))
+          (File          . ,(all-the-icons-material "insert_drive_file"        :face 'all-the-icons-red))
+          (Reference     . ,(all-the-icons-material "collections_bookmark"     :face 'all-the-icons-red))
+          (Folder        . ,(all-the-icons-material "folder"                   :face 'all-the-icons-red))
+          (EnumMember    . ,(all-the-icons-material "people"                   :face 'all-the-icons-red))
+          (Constant      . ,(all-the-icons-material "pause_circle_filled"      :face 'all-the-icons-red))
+          (Struct        . ,(all-the-icons-material "streetview"               :face 'all-the-icons-red))
+          (Event         . ,(all-the-icons-material "event"                    :face 'all-the-icons-red))
+          (Operator      . ,(all-the-icons-material "control_point"            :face 'all-the-icons-red))
+          (TypeParameter . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
+          (Template      . ,(all-the-icons-material "short_text"               :face 'all-the-icons-green)))))
 
 ;; Улучшенная работа с crontab файлами
 (use-package crontab-mode)
@@ -253,12 +295,6 @@
   (when (file-exists-p secrets-file)
     (load secrets-file)))
 
-;; Получать значение $PATH из шелла
-(use-package exec-path-from-shell
-  :demand t
-  :init
-  (exec-path-from-shell-initialize))
-
 ;; Настройки Magit
 (use-package magit
   :config
@@ -295,6 +331,8 @@
   :custom
   (org-roam-directory "~/org-roam")
   (org-roam-completion-everywhere t)
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n t" . org-roam-tag-add)
@@ -305,13 +343,11 @@
          ("C-c n e" . consult-org-roam-file-find)
          ("C-c n b" . consult-org-roam-backlinks)
          ("C-c n r" . consult-org-roam-search)
-         :map org-mode-map
-         ("C-M-i" . completion-at-point)
          :map org-roam-dailies-map
          ("Y" . org-roam-dailies-capture-yesterday)
-         ("T" . org-roam-dailies-capture-tomorrow))
-  :bind-keymap
-  ("C-c n d" . org-roam-dailies-map)
+         ("T" . org-roam-dailies-capture-tomorrow)
+         :map org-mode-map
+         ("C-M-i" . completion-at-point))
   :functions
   (my/org-roam-select
    my/org-roam-to-hugo
@@ -327,6 +363,7 @@
   ;;                      org-export-before-parsing-functions
   ;;                      (append org-export-before-parsing-functions '(my/org-export-before-parsing)))))))
 
+  (require 'org-roam-dailies)
   (defun my/org-roam-select (kind)
     "Выбирает ноды org-roam, содержащие определённое слово в параметре KIND"
     (cl-remove-if-not
@@ -474,10 +511,6 @@
 ;; pdf-tools для чтения PDF файлов
 (use-package pdf-tools)
 
-(use-package project
-  :config
-  (define-key project-prefix-map "s" 'project-vterm))
-
 ;; Пакет для работы клавиш емакса в русской раскладке
 (use-package reverse-im
   :demand t
@@ -581,28 +614,6 @@
   :after vertico
   :config
   (vertico-posframe-mode 1))
-
-;; Пакет vterm для эмулятора терминала внутри Emacs
-(use-package vterm
-  :after project
-  :demand t
-  :bind ("s-x" . vterm)
-  :functions
-  (project-vterm)
-  :config
-  (setq vterm-kill-buffer-on-exit t)
-  (setq vterm-buffer-name-string "%s vterm")
-  (defun project-vterm ()
-  (interactive)
-  (require 'comint)
-  (let* ((default-directory (project-root (project-current t)))
-         (default-project-shell-name (project-prefixed-buffer-name "vterm"))
-         (shell-buffer (get-buffer default-project-shell-name)))
-    (if (and shell-buffer (not current-prefix-arg))
-        (if (comint-check-proc shell-buffer)
-            (pop-to-buffer shell-buffer (bound-and-true-p display-comint-buffer-action))
-          (vterm shell-buffer))
-      (vterm (generate-new-buffer-name default-project-shell-name))))))
 
 ;; Подсказывать справку по доступным сочетаниям при нажатии
 ;; C-h во время ввода сочетания
