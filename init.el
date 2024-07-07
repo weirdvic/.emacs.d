@@ -154,12 +154,15 @@
   ;; Разделять окно только по вертикали
   (setq split-window-preferred-function 'split-window-prefer-vertically)
 
-  ;; Фиксы TRAMP на Windows
+  ;; Фиксы для работы в Windows
   (when (eq system-type 'windows-nt)
     (require 'tramp)
     (push '("-tt")
           (cadr (assoc 'tramp-login-args
-                       (assoc "ssh" tramp-methods)))))
+                       (assoc "ssh" tramp-methods))))
+    (setq shell-file-name "C:/Windows/system32/bash.exe")
+    (setenv "ESHELL" "bash"))
+
 
   (setq major-mode-remap-alist
         '((python-mode . python-ts-mode)
@@ -526,8 +529,14 @@
 
 ;; Настройки tab-bar для работы со вкладками
 (use-package tab-bar
+  :demand t
   :config
-  (setq tab-bar-show 1)
+  (when (eq system-type 'windows-nt)
+    (setq w32-lwindow-modifier 'super)
+    (w32-register-hot-key [s-{])
+    (w32-register-hot-key [s-}])
+    (w32-register-hot-key [s-t])
+    (w32-register-hot-key [s-w]))
   (setq tab-bar-close-button-show nil)
   (setq tab-bar-new-tab-choice "*scratch*")
   (setq tab-bar-tab-hints t)
@@ -568,6 +577,7 @@
           (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
           (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
   (add-to-list 'tree-sitter-major-mode-language-alist '(go-ts-mode . go))
+  ;; (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
   :after tree-sitter)
 
 ;; Настройки TRAMP
